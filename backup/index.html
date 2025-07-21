@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>IPA子音(肺気流) リスニング</title>
+   <style>
+    body {
+      font-family: sans-serif;
+      background: #222;
+      color: #fff;
+      text-align: center;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 20px auto;
+    }
+
+    th, td {
+      border: 1px solid #aaa;
+      max-width: 95%;
+      height: 50px;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    th {
+      color: white;
+    }
+
+    .label {
+      background-color: green;
+      color: white;
+    }
+
+    .unpronounceable {
+      background-color: rgb(255, 116, 100);
+    }
+
+    .clickable:hover {
+      background-color: #ccf;
+    }
+    
+    .ipa-table-wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 1rem;
+      overflow-x: auto;
+    }
+
+    .ipa-table {
+      border-collapse: collapse;
+      width: 100%; 
+      width: auto;
+      margin: 0;
+    }
+
+    .ipa-table th, .ipa-table td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: center;
+    }
+
+    .pc-only {
+    display: block;
+    }
+
+    .mobile-only {
+    display: none;
+    }
+
+    @media (max-width: 768px) {
+        .ipa-table-wrapper {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ipa-table {
+            width: 95%;
+            font-size: 16px;
+        }
+
+        .pc-only {
+            display: none;
+        }
+
+        .mobile-only {
+            display: block;
+        }
+    }
+
+
+  </style>
+</head>
+  <body>
+    <h1>IPA子音(肺気流) リスニング</h1>
+    <button onclick="playRandomSound()">🎧 ランダム再生</button>
+    <button onclick="replaySound()">🔁 もう一度聞く</button>
+    <button onclick="playWrongSound()">⚠️ 間違いから出題</button>
+    <p id="message"></p>
+    <audio id="audioPlayer"></audio>
+
+    <div class="pc-only">
+        <div class="ipa-table-wrapper">
+            <table id="ipaTable" class="ipa-table">
+                <tr class="label">
+                    <th rowspan="2"></th>
+                    <th colspan="2">両唇</th>
+                    <th colspan="2">唇歯</th>
+                    <th colspan="2">歯音</th>
+                    <th colspan="2">歯茎音</th>
+                    <th colspan="2">後部歯茎音</th>
+                    <th colspan="2">そり舌音</th>
+                    <th colspan="2">硬口蓋音</th>
+                    <th colspan="2">軟口蓋音</th>
+                    <th colspan="2">口蓋垂音</th>
+                    <th colspan="2">咽頭音</th>
+                    <th colspan="2">声門音</th>
+                </tr>
+
+                <tr class="label">
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                </tr><tr>
+
+                <td class="label">破裂音</td>
+                    <td class="ipa-cell clickable" data-name="両唇無声破裂音" data-sound="s101">p</td>
+                    <td class="ipa-cell clickable" data-name="両唇有声破裂音" data-sound="s102">b</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="歯茎無声破裂音" data-sound="s103">t</td>
+                    <td class="ipa-cell clickable" data-name="歯茎有声破裂音" data-sound="s104">d</td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="そり舌無声破裂音" data-sound="s105">ʈ</td>
+                    <td class="ipa-cell clickable" data-name="そり舌有声破裂音" data-sound="s106">ɖ</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋無声破裂音" data-sound="s107">c</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋有声破裂音" data-sound="s108">ɟ</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋無声破裂音" data-sound="s109">k</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋有声破裂音" data-sound="s110">g</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂無声破裂音" data-sound="s111">q</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂有声破裂音" data-sound="s112">ɢ</td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="ipa-cell clickable" data-name="声門破裂音" data-sound="s113">ʔ</td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>        
+            
+                <td class="label">鼻音</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="両唇鼻音" data-sound="s114">m</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="唇歯鼻音" data-sound="s115">ɱ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="歯茎鼻音" data-sound="s116">n</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="そり舌鼻音" data-sound="s117">ɳ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋鼻音" data-sound="s118">ŋ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋鼻音" data-sound="s119">ŋ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂鼻音" data-sound="s120">ɴ</td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">ふるえ音</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="両唇ふるえ音" data-sound="s121">ʙ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="歯茎ふるえ音" data-sound="s122">r</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂ふるえ音" data-sound="s123">ʀ</td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">たたき音</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="唇歯たたき音" data-sound="s184">ⱱ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="歯茎たたき音" data-sound="s124">ɾ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="そり舌たたき音" data-sound="s125">ɽ</td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+
+                <td class="label">摩擦音</td>
+                    <td class="ipa-cell clickable" data-name="両唇無声摩擦音" data-sound="s126">ɸ</td>
+                    <td class="ipa-cell clickable" data-name="両唇有声摩擦音" data-sound="s127">β</td>
+                    <td class="ipa-cell clickable" data-name="唇歯無声摩擦音" data-sound="s128">f</td>
+                    <td class="ipa-cell clickable" data-name="唇歯有声摩擦音" data-sound="s129">v</td>
+                    <td class="ipa-cell clickable" data-name="歯無声摩擦音" data-sound="s130">θ</td>
+                    <td class="ipa-cell clickable" data-name="歯有声摩擦音" data-sound="s131">ð</td>
+                    <td class="ipa-cell clickable" data-name="歯茎無声摩擦音" data-sound="s132">s</td>
+                    <td class="ipa-cell clickable" data-name="歯茎有声摩擦音" data-sound="s133">z</td>
+                    <td class="ipa-cell clickable" data-name="後部歯茎無声摩擦音" data-sound="s134">ʃ</td>
+                    <td class="ipa-cell clickable" data-name="後部歯茎有声摩擦音" data-sound="s135">ʒ</td>
+                    <td class="ipa-cell clickable" data-name="そり舌無声摩擦音" data-sound="s136">ʂ</td>
+                    <td class="ipa-cell clickable" data-name="そり舌有声摩擦音" data-sound="s137">ʐ</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋無声摩擦音" data-sound="s138">ç</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋有声摩擦音" data-sound="s139">ʝ</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋無声摩擦音" data-sound="s140">x</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋有声摩擦音" data-sound="s141">ɣ</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂無声摩擦音" data-sound="s142">χ</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂有声摩擦音" data-sound="s143">ʁ</td>
+                    <td class="ipa-cell clickable" data-name="咽頭無声摩擦音" data-sound="s144">ħ</td>
+                    <td class="ipa-cell clickable" data-name="咽頭有声摩擦音" data-sound="s145">ʕ</td>
+                    <td class="ipa-cell clickable" data-name="声門無声摩擦音" data-sound="s146">h</td>
+                    <td class="ipa-cell clickable" data-name="声門有声摩擦音" data-sound="s147">ɦ</td>
+                </tr><tr>
+
+                <td class="label">側面摩擦音</td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="歯茎側面無声摩擦音" data-sound="s148">ɬ</td>
+                    <td class="ipa-cell clickable" data-name="歯茎側面有声摩擦音" data-sound="s149">ɮ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">接近音</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="唇歯接近音" data-sound="s150">ʋ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="歯茎接近音" data-sound="s151">ɹ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="そり舌接近音" data-sound="s152">ɻ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋接近音" data-sound="s153">j</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋接近音" data-sound="s154">ɰ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">側面接近音</td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="歯茎側面接近音" data-sound="s155">l</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="そり舌側面接近音" data-sound="s156">ɭ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋側面接近音" data-sound="s157">ʎ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋側面接近音" data-sound="s158">ʟ</td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="mobile-only">
+        <div class="ipa-table-wrapper">
+            <table id="ipaTable1" class="ipa-table">
+                <tr class="label">
+                    <th rowspan="2"></th>
+                    <th colspan="2">両唇</th>
+                    <th colspan="2">唇歯</th>
+                    <th colspan="2">歯音</th>
+                    <th colspan="2">歯茎音</th>
+                    <th colspan="2">後部歯茎音</th>
+                    <th colspan="2">そり舌音</th>
+                </tr>
+            <tr class="label">
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+            </tr><tr>
+            <td class="label">破裂音</td>
+                <td class="ipa-cell clickable" data-name="両唇無声破裂音" data-sound="s101">p</td>
+                <td class="ipa-cell clickable" data-name="両唇有声破裂音" data-sound="s102">b</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="歯茎無声破裂音" data-sound="s103">t</td>
+                <td class="ipa-cell clickable" data-name="歯茎有声破裂音" data-sound="s104">d</td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="そり舌無声破裂音" data-sound="s105">ʈ</td>
+                <td class="ipa-cell clickable" data-name="そり舌有声破裂音" data-sound="s106">ɖ</td>
+            <tr></tr>
+
+            <td class="label">鼻音</td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="両唇鼻音" data-sound="s114">m</td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="唇歯鼻音" data-sound="s115">ɱ</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="歯茎鼻音" data-sound="s116">n</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="そり舌鼻音" data-sound="s117">ɳ</td>
+            </tr><tr>
+
+            <td class="label">ふるえ音</td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="両唇ふるえ音" data-sound="s121">ʙ</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="歯茎ふるえ音" data-sound="s122">r</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr><tr>
+
+            <td class="label">たたき音</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="唇歯たたき音" data-sound="s184">ⱱ</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="歯茎たたき音" data-sound="s124">ɾ</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="そり舌たたき音" data-sound="s125">ɽ</td>
+            </tr><tr>
+
+            <td class="label">摩擦音</td>
+                <td class="ipa-cell clickable" data-name="両唇無声摩擦音" data-sound="s126">ɸ</td>
+                <td class="ipa-cell clickable" data-name="両唇有声摩擦音" data-sound="s127">β</td>
+                <td class="ipa-cell clickable" data-name="唇歯無声摩擦音" data-sound="s128">f</td>
+                <td class="ipa-cell clickable" data-name="唇歯有声摩擦音" data-sound="s129">v</td>
+                <td class="ipa-cell clickable" data-name="歯無声摩擦音" data-sound="s130">θ</td>
+                <td class="ipa-cell clickable" data-name="歯有声摩擦音" data-sound="s131">ð</td>
+                <td class="ipa-cell clickable" data-name="歯茎無声摩擦音" data-sound="s132">s</td>
+                <td class="ipa-cell clickable" data-name="歯茎有声摩擦音" data-sound="s133">z</td>
+                <td class="ipa-cell clickable" data-name="後部歯茎無声摩擦音" data-sound="s134">ʃ</td>
+                <td class="ipa-cell clickable" data-name="後部歯茎有声摩擦音" data-sound="s135">ʒ</td>
+                <td class="ipa-cell clickable" data-name="そり舌無声摩擦音" data-sound="s136">ʂ</td>
+                <td class="ipa-cell clickable" data-name="そり舌有声摩擦音" data-sound="s137">ʐ</td>
+            </tr><tr>
+
+            <td class="label">側面摩擦音</td>
+                <td class="unpronounceable"></td>
+                <td class="unpronounceable"></td>
+                <td class="unpronounceable"></td>
+                <td class="unpronounceable"></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="歯茎側面無声摩擦音" data-sound="s148">ɬ</td>
+                <td class="ipa-cell clickable" data-name="歯茎側面有声摩擦音" data-sound="s149">ɮ</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr><tr>
+
+            <td class="label">接近音</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="唇歯接近音" data-sound="s150">ʋ</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="歯茎接近音" data-sound="s151">ɹ</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="そり舌接近音" data-sound="s152">ɻ</td>
+            </tr><tr>
+
+            <td class="label">側面接近音</td>
+                <td class="unpronounceable"></td>
+                <td class="unpronounceable"></td>
+                <td class="unpronounceable"></td>
+                <td class="unpronounceable"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="歯茎側面接近音" data-sound="s155">l</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="ipa-cell clickable" data-name="そり舌側面接近音" data-sound="s156">ɭ</td>
+            </tr>
+            </table>
+        </div>
+
+        <div class="ipa-table-wrapper">
+            <table id="ipaTable2" class="ipa-table">
+                <tr class="label">
+                    <th rowspan="2"></th>
+                    <th colspan="2">硬口蓋音</th>
+                    <th colspan="2">軟口蓋音</th>
+                    <th colspan="2">口蓋垂音</th>
+                    <th colspan="2">咽頭音</th>
+                    <th colspan="2">声門音</th>
+                </tr>
+
+                <tr class="label">
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                    <th>無声</th><th>有声</th>
+                </tr><tr>
+
+                <td class="label">破裂音</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋無声破裂音" data-sound="s107">c</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋有声破裂音" data-sound="s108">ɟ</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋無声破裂音" data-sound="s109">k</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋有声破裂音" data-sound="s110">g</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂無声破裂音" data-sound="s111">q</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂有声破裂音" data-sound="s112">ɢ</td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="ipa-cell clickable" data-name="声門破裂音" data-sound="s113">ʔ</td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">鼻音</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋鼻音" data-sound="s118">ŋ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋鼻音" data-sound="s119">ŋ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂鼻音" data-sound="s120">ɴ</td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">ふるえ音</td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂ふるえ音" data-sound="s123">ʀ</td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">たたき音</td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">摩擦音</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋無声摩擦音" data-sound="s138">ç</td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋有声摩擦音" data-sound="s139">ʝ</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋無声摩擦音" data-sound="s140">x</td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋有声摩擦音" data-sound="s141">ɣ</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂無声摩擦音" data-sound="s142">χ</td>
+                    <td class="ipa-cell clickable" data-name="口蓋垂有声摩擦音" data-sound="s143">ʁ</td>
+                    <td class="ipa-cell clickable" data-name="咽頭無声摩擦音" data-sound="s144">ħ</td>
+                    <td class="ipa-cell clickable" data-name="咽頭有声摩擦音" data-sound="s145">ʕ</td>
+                    <td class="ipa-cell clickable" data-name="声門無声摩擦音" data-sound="s146">h</td>
+                    <td class="ipa-cell clickable" data-name="声門有声摩擦音" data-sound="s147">ɦ</td>
+                </tr><tr>
+
+                <td class="label">側面摩擦音</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">接近音</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋接近音" data-sound="s153">j</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋接近音" data-sound="s154">ɰ</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr><tr>
+
+                <td class="label">側面接近音</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="硬口蓋側面接近音" data-sound="s157">ʎ</td>
+                    <td></td>
+                    <td class="ipa-cell clickable" data-name="軟口蓋側面接近音" data-sound="s158">ʟ</td>
+                    <td></td>
+                    <td></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                    <td class="unpronounceable"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+      <h2>❌ 間違い履歴</h2>
+      <button onclick="clearHistory()">🗑️ 履歴クリア</button>
+        <table id="historyTable" border="1">
+          <thead>
+            <tr><th>記号</th><th>日本語名</th><th>間違えた回数</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+      <h3>
+        ※本サイトのIPA音声は、東京外国語大学 言語モジュール
+        （<a href="https://www.coelang.tufs.ac.jp/ipa/consonant_pulmonic.php" target="_blank" rel="noopener noreferrer">
+          https://www.coelang.tufs.ac.jp/ipa/consonant_pulmonic.php
+        </a>）に掲載されている音声ファイルを使用しています。<br>
+        音声の著作権は東京外国語大学に帰属します。© Tokyo University of Foreign Studies.
+      </h3>
+
+    <script>
+      const audioPlayer = document.getElementById("audioPlayer");
+      const message = document.getElementById("message");
+      let correctSound = "";
+      const wrongHistory = [];
+
+      const soundToSymbol = {
+        s101: "p", s102: "b", s103: "t", s104: "d", s105: "ʈ", s106: "ɖ",
+        s107: "c", s108: "ɟ", s109: "k", s110: "g", s111: "q", s112: "ɢ",
+        s113: "ʔ", s114: "m", s115: "ɱ", s116: "n", s117: "ɳ", s118: "ŋ",
+        s119: "ŋ", s120: "ɴ", s121: "ʙ", s122: "r", s123: "ʀ", s124: "ɾ",
+        s125: "ɽ", s126: "ɸ", s127: "β", s128: "f", s129: "v", s130: "θ",
+        s131: "ð", s132: "s", s133: "z", s134: "ʃ", s135: "ʒ", s136: "ʂ",
+        s137: "ʐ", s138: "ç", s139: "ʝ", s140: "x", s141: "ɣ", s142: "χ",
+        s143: "ʁ", s144: "ħ", s145: "ʕ", s146: "h", s147: "ɦ", s148: "ɬ",
+        s149: "ɮ", s150: "ʋ", s151: "ɹ", s152: "ɻ", s153: "j", s154: "ɰ",
+        s155: "l", s156: "ɭ", s157: "ʎ", s158: "ʟ", s184: "ⱱ"
+      };
+
+      function replaySound() {
+        if (correctSound) {
+          audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
+          audioPlayer.play();
+          message.textContent = `🔁 もう一度再生しました`;
+        } else {
+          message.textContent = "🎧 まずは新しい音声を再生してください。";
+        }
+      }
+
+      function playRandomSound() {
+        const soundKeys = Object.keys(soundToSymbol);
+        const randomIndex = Math.floor(Math.random() * soundKeys.length);
+        correctSound = soundKeys[randomIndex];
+        audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
+        audioPlayer.play();
+        message.textContent = "再生しました。正しい記号をクリックしてください。";
+      }
+      
+      const wrongHistoryMap = {};  // 例: { s101: 2, s103: 1 }
+
+      function updateHistoryTable() {
+        const tbody = document.querySelector("#historyTable tbody");
+        tbody.innerHTML = "";  // 表をリセット
+
+        for (const soundID in wrongHistoryMap) {
+          const symbol = soundToSymbol[soundID];
+          const cell = document.querySelector(`.clickable[data-sound="${soundID}"]`);
+          const name = cell ? cell.dataset.name : "（名称不明）";
+          const count = wrongHistoryMap[soundID];
+
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${symbol}</td><td>${name}</td><td>${count}</td>`;
+          tbody.appendChild(row);
+        }
+      }
+
+      function playWrongSound() {
+        if (wrongHistory.length === 0) {
+          message.textContent = "🎉 間違いはありません！すべて正解です。";
+          return;
+        }
+        const randomIndex = Math.floor(Math.random() * wrongHistory.length);
+        correctSound = wrongHistory[randomIndex];
+        audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
+        audioPlayer.play();
+        message.textContent = "❓ 間違った問題から再出題しました。正しい記号を選んでください。";
+      }
+
+      function saveHistory() {
+          localStorage.setItem("wrongHistory", JSON.stringify(wrongHistory));
+          localStorage.setItem("wrongHistoryMap", JSON.stringify(wrongHistoryMap));
+        }
+
+        function loadHistory() {
+          const wh = localStorage.getItem("wrongHistory");
+          const wm = localStorage.getItem("wrongHistoryMap");
+          if (wh) wrongHistory.push(...JSON.parse(wh));
+          if (wm) Object.assign(wrongHistoryMap, JSON.parse(wm));
+          updateHistoryTable();
+        }
+        function clearHistory() {
+          wrongHistory.length = 0;
+          for (let key in wrongHistoryMap) delete wrongHistoryMap[key];
+          localStorage.removeItem("wrongHistory");
+          localStorage.removeItem("wrongHistoryMap");
+          updateHistoryTable();
+          message.textContent = "🧹 履歴をクリアしました";
+        }
+
+      // 学習用クリック（再生のみ）＋ クイズ時の正誤判定
+      document.querySelectorAll(".clickable").forEach(cell => {
+        cell.addEventListener("click", () => {
+          const selected = cell.dataset.sound;
+
+          // 再生処理（常に）
+          if (selected) {
+            audioPlayer.src = `ipa_sounds/${selected}.mp3`;
+            audioPlayer.play();
+          }
+
+          // 正誤判定（クイズモード中のみ）
+          if (!correctSound) return;
+
+          if (selected === correctSound) {
+            message.textContent = `✅ 正解！（${soundToSymbol[selected]}）`;
+          } else {
+            const correctCell = document.querySelector(`.clickable[data-sound="${correctSound}"]`);
+            const symbol = soundToSymbol[correctSound];
+            const name = correctCell ? correctCell.dataset.name : "（名称不明）";
+            message.textContent = `❌ 不正解。正解は ${symbol}（${name}）です。`;
+
+            if (!wrongHistory.includes(correctSound)) {
+              wrongHistory.push(correctSound);
+            }
+            wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
+
+            saveHistory();
+            updateHistoryTable();
+          }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+          loadHistory();
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", loadHistory);
+
+    </script>
+      <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+      
+        const firebaseConfig = {
+          apiKey: "AIzaSyAuWRdqOiP3XoptQwTkmlSj2Goa9YpcWSY",
+          authDomain: "ipalistening.firebaseapp.com",
+          projectId: "ipalistening",
+          storageBucket: "ipalistening.appspot.com",
+          messagingSenderId: "845925343561",
+          appId: "1:845925343561:web:661aff64e1588a887c3a98",
+          measurementId: "G-R7DPSFMZ4Z"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+      
+        // 認証状態を確認
+        onAuthStateChanged(auth, (user) => {
+          if (!user) {
+            // 未ログインならログインページへ
+            window.location.href = "login.html";
+          }
+        });
+      </script>
+  </body>
+</html>
