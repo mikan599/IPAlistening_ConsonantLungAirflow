@@ -1,0 +1,38 @@
+body {
+  font-family: sans-serif;
+  background: #222;
+  color: #fff;
+  text-align: center;
+}
+table {
+  border-collapse: collapse;
+  margin: 20px auto;
+}
+
+th,
+td {
+  border: 1px solid #aaa;
+  max-width: 95%;
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+th {
+  color: white;
+}
+
+.label {
+  background-color: green;
+  color: white;
+}
+
+.unpronounceable {
+  background-color: rgb(255, 116, 100);
+}
+
+.clickable:hover {
+  background-color: #ccf;
+}
