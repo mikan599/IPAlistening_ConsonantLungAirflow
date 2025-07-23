@@ -141,20 +141,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ボタン関数をグローバルにする（HTMLのonclickから使えるように）
   window.replaySound = replaySound;
   window.playRandomSound = playRandomSound;
   window.playWrongSound = playWrongSound;
   window.clearHistory = clearHistory;
 
-  // 初期化処理
   loadHistory();
   setupClickListeners();
 
-  // Firebase 認証チェック
+  /* firebass認証を一時的に無効化
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       window.location.href = "login.html";
     }
   });
+  */
 });
