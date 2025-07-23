@@ -50,10 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  let hasAnsweredCorrectly = false; // ✅ 出題後〜正解まで false、正解後 true
+  let hasAlreadyCountedWrong = false;
+
   function playRandomSound() {
     const soundKeys = Object.keys(soundToSymbol);
     const randomIndex = Math.floor(Math.random() * soundKeys.length);
     correctSound = soundKeys[randomIndex];
+    hasAnsweredCorrectly = false;
+    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
     audioPlayer.play();
     message.textContent = "再生しました。正しい記号をクリックしてください。";
@@ -66,6 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const randomIndex = Math.floor(Math.random() * wrongHistory.length);
     correctSound = wrongHistory[randomIndex];
+    hasAnsweredCorrectly = false;
+    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
     audioPlayer.play();
     message.textContent = "❓ 間違った問題から再出題しました。正しい記号を選んでください。";
@@ -123,19 +130,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (selected === correctSound) {
           message.textContent = `✅ 正解！（${soundToSymbol[selected]}）`;
+          hasAnsweredCorrectly = true; // ✅ 一度正解したら履歴カウントを停止
         } else {
           const correctCell = document.querySelector(`.clickable[data-sound="${correctSound}"]`);
           const symbol = soundToSymbol[correctSound];
           const name = correctCell ? correctCell.dataset.name : "（名称不明）";
           message.textContent = `❌ 不正解。正解は ${symbol}（${name}）です。`;
 
-          if (!wrongHistory.includes(correctSound)) {
-            wrongHistory.push(correctSound);
-          }
-          wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
+          // ✅ 一度だけ間違いを記録
+          if (!hasAnsweredCorrectly && !hasAlreadyCountedWrong) {
+            if (!wrongHistory.includes(correctSound)) {
+              wrongHistory.push(correctSound);
+            }
+            wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
+            hasAlreadyCountedWrong = true; // ✅ 次からはカウントしない
 
-          saveHistory();
-          updateHistoryTable();
+            saveHistory();
+            updateHistoryTable();
+          }
         }
       });
     });
