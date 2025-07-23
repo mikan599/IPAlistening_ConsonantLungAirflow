@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ログインページ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: gray;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px blac;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 80%;
+      padding: 20px;
+      margin: 0px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: block;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    form {
+      max-width: 300px;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>ログイン</h1>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="メールアドレス" required><br>
+      <input type="password" id="password" placeholder="パスワード" required><br>
+      <button type="submit">ログイン</button>
+    </form>
+  </div>
+
+  <!-- Firebase SDKをESM形式で読み込み -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+
+    // ✅ あなたの Firebase 設定（セキュリティのためGitHubなどで公開しないように注意）
+    const firebaseConfig = {
+      apiKey: "AIzaSyAuWRdqOiP3XoptQwTkmlSj2Goa9YpcWSY",
+      authDomain: "ipalistening.firebaseapp.com",
+      projectId: "ipalistening",
+      storageBucket: "ipalistening.appspot.com",
+      messagingSenderId: "845925343561",
+      appId: "1:845925343561:web:661aff64e1588a887c3a98",
+      measurementId: "G-R7DPSFMZ4Z"
+    };
+
+    // Firebase 初期化
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ログイン処理
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // ✅ ログイン成功時
+          alert("ログインしました。");
+          window.location.href = "index.html"; // ← 保護されたページへリダイレクト
+        })
+        .catch((error) => {
+          alert("ログインエラー: " + error.message);
+        });
+    });
+  </script>
+</body>
+
+</html>

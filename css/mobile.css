@@ -1,0 +1,6 @@
+.pc-only {
+  display: none;
+}
+.mobile-only {
+  display: block;
+}
