@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const soundToSymbol = {
     s101: "p", s102: "b", s103: "t", s104: "d", s105: "ʈ", s106: "ɖ",
     s107: "c", s108: "ɟ", s109: "k", s110: "g", s111: "q", s112: "ɢ",
-    s113: "ʔ", s114: "m", s115: "ɱ", s116: "n", s117: "ɳ", s118: "ŋ",
+    s113: "ʔ", s114: "m", s115: "ɱ", s116: "n", s117: "ɳ", s118: "ɲ",
     s119: "ŋ", s120: "ɴ", s121: "ʙ", s122: "r", s123: "ʀ", s124: "ɾ",
     s125: "ɽ", s126: "ɸ", s127: "β", s128: "f", s129: "v", s130: "θ",
     s131: "ð", s132: "s", s133: "z", s134: "ʃ", s135: "ʒ", s136: "ʂ",
@@ -50,10 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  let hasAnsweredCorrectly = false; // ✅ 出題後〜正解まで false、正解後 true
+  let hasAlreadyCountedWrong = false;
+
   function playRandomSound() {
     const soundKeys = Object.keys(soundToSymbol);
     const randomIndex = Math.floor(Math.random() * soundKeys.length);
     correctSound = soundKeys[randomIndex];
+    hasAnsweredCorrectly = false;
+    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
     audioPlayer.play();
     message.textContent = "再生しました。正しい記号をクリックしてください。";
@@ -66,6 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const randomIndex = Math.floor(Math.random() * wrongHistory.length);
     correctSound = wrongHistory[randomIndex];
+    hasAnsweredCorrectly = false;
+    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
     audioPlayer.play();
     message.textContent = "❓ 間違った問題から再出題しました。正しい記号を選んでください。";
@@ -123,38 +130,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (selected === correctSound) {
           message.textContent = `✅ 正解！（${soundToSymbol[selected]}）`;
+          hasAnsweredCorrectly = true; // ✅ 一度正解したら履歴カウントを停止
         } else {
           const correctCell = document.querySelector(`.clickable[data-sound="${correctSound}"]`);
           const symbol = soundToSymbol[correctSound];
           const name = correctCell ? correctCell.dataset.name : "（名称不明）";
           message.textContent = `❌ 不正解。正解は ${symbol}（${name}）です。`;
 
-          if (!wrongHistory.includes(correctSound)) {
-            wrongHistory.push(correctSound);
-          }
-          wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
+          // ✅ 一度だけ間違いを記録
+          if (!hasAnsweredCorrectly && !hasAlreadyCountedWrong) {
+            if (!wrongHistory.includes(correctSound)) {
+              wrongHistory.push(correctSound);
+            }
+            wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
+            hasAlreadyCountedWrong = true; // ✅ 次からはカウントしない
 
-          saveHistory();
-          updateHistoryTable();
+            saveHistory();
+            updateHistoryTable();
+          }
         }
       });
     });
   }
 
-  // ボタン関数をグローバルにする（HTMLのonclickから使えるように）
   window.replaySound = replaySound;
   window.playRandomSound = playRandomSound;
   window.playWrongSound = playWrongSound;
   window.clearHistory = clearHistory;
 
-  // 初期化処理
   loadHistory();
   setupClickListeners();
 
-  // Firebase 認証チェック
+  /* firebass認証を一時的に無効化
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       window.location.href = "login.html";
     }
   });
+  */
 });
