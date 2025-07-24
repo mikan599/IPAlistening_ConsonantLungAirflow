@@ -53,10 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let hasAnsweredCorrectly = false; // ✅ 出題後〜正解まで false、正解後 true
   let hasAlreadyCountedWrong = false;
 
+  let hasAnsweredCorrectly = false; // ✅ 出題後〜正解まで false、正解後 true
+  let hasAlreadyCountedWrong = false;
+
   function playRandomSound() {
     const soundKeys = Object.keys(soundToSymbol);
     const randomIndex = Math.floor(Math.random() * soundKeys.length);
     correctSound = soundKeys[randomIndex];
+    hasAnsweredCorrectly = false;
+    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     hasAnsweredCorrectly = false;
     hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
@@ -71,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const randomIndex = Math.floor(Math.random() * wrongHistory.length);
     correctSound = wrongHistory[randomIndex];
+    hasAnsweredCorrectly = false;
+    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     hasAnsweredCorrectly = false;
     hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
     audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
@@ -131,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (selected === correctSound) {
           message.textContent = `✅ 正解！（${soundToSymbol[selected]}）`;
           hasAnsweredCorrectly = true; // ✅ 一度正解したら履歴カウントを停止
+          hasAnsweredCorrectly = true; // ✅ 一度正解したら履歴カウントを停止
         } else {
           const correctCell = document.querySelector(`.clickable[data-sound="${correctSound}"]`);
           const symbol = soundToSymbol[correctSound];
@@ -144,7 +152,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
             hasAlreadyCountedWrong = true; // ✅ 次からはカウントしない
+          // ✅ 一度だけ間違いを記録
+          if (!hasAnsweredCorrectly && !hasAlreadyCountedWrong) {
+            if (!wrongHistory.includes(correctSound)) {
+              wrongHistory.push(correctSound);
+            }
+            wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
+            hasAlreadyCountedWrong = true; // ✅ 次からはカウントしない
 
+            saveHistory();
+            updateHistoryTable();
+          }
             saveHistory();
             updateHistoryTable();
           }
@@ -162,10 +180,12 @@ document.addEventListener("DOMContentLoaded", () => {
   setupClickListeners();
 
   /* firebass認証を一時的に無効化
+  /* firebass認証を一時的に無効化
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       window.location.href = "login.html";
     }
   });
+  */
   */
 });
