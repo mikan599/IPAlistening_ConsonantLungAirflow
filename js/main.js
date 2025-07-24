@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const wrongHistoryMap = {};
   const volumeSlider = document.getElementById("volumeSlider");
   volumeSlider.addEventListener("input", () => {
-    audioPlayer.volume = parseFloat(volumeSlider.value);
   });
 
   const soundToSymbol = {
@@ -49,9 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
       message.textContent = "🎧 まずは新しい音声を再生してください。";
     }
   }
-
-  let hasAnsweredCorrectly = false; // ✅ 出題後〜正解まで false、正解後 true
-  let hasAlreadyCountedWrong = false;
 
   let hasAnsweredCorrectly = false; // ✅ 出題後〜正解まで false、正解後 true
   let hasAlreadyCountedWrong = false;
@@ -180,12 +176,10 @@ document.addEventListener("DOMContentLoaded", () => {
   setupClickListeners();
 
   /* firebass認証を一時的に無効化
-  /* firebass認証を一時的に無効化
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       window.location.href = "login.html";
     }
   });
-  */
   */
 });
