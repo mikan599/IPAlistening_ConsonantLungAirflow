@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const wrongHistoryMap = {};
   const volumeSlider = document.getElementById("volumeSlider");
   volumeSlider.addEventListener("input", () => {
+    audioPlayer.volume = volumeSlider.value;
   });
 
   const soundToSymbol = {
@@ -39,9 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
     s155: "l", s156: "ɭ", s157: "ʎ", s158: "ʟ", s184: "ⱱ"
   };
 
+  function getAudioUrl(soundID) {
+    return `https://www.coelang.tufs.ac.jp/ipa/sounds/${soundID}.mp3`;
+  }
+
   function replaySound() {
     if (correctSound) {
-      audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
+      audioPlayer.src = getAudioUrl(correctSound);
       audioPlayer.play();
       message.textContent = `🔁 もう一度再生しました`;
     } else {
@@ -49,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  let hasAnsweredCorrectly = false; // ✅ 出題後〜正解まで false、正解後 true
+  let hasAnsweredCorrectly = false;
   let hasAlreadyCountedWrong = false;
 
   function playRandomSound() {
@@ -57,10 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const randomIndex = Math.floor(Math.random() * soundKeys.length);
     correctSound = soundKeys[randomIndex];
     hasAnsweredCorrectly = false;
-    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
-    hasAnsweredCorrectly = false;
-    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
-    audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
+    hasAlreadyCountedWrong = false;
+    audioPlayer.src = getAudioUrl(correctSound);
     audioPlayer.play();
     message.textContent = "再生しました。正しい記号をクリックしてください。";
   }
@@ -73,10 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const randomIndex = Math.floor(Math.random() * wrongHistory.length);
     correctSound = wrongHistory[randomIndex];
     hasAnsweredCorrectly = false;
-    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
-    hasAnsweredCorrectly = false;
-    hasAlreadyCountedWrong = false; // ✅ カウントフラグをリセット
-    audioPlayer.src = `ipa_sounds/${correctSound}.mp3`;
+    hasAlreadyCountedWrong = false;
+    audioPlayer.src = getAudioUrl(correctSound);
     audioPlayer.play();
     message.textContent = "❓ 間違った問題から再出題しました。正しい記号を選んでください。";
   }
@@ -125,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const selected = cell.dataset.sound;
 
         if (selected) {
-          audioPlayer.src = `ipa_sounds/${selected}.mp3`;
+          audioPlayer.src = getAudioUrl(selected);
           audioPlayer.play();
         }
 
@@ -133,32 +134,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (selected === correctSound) {
           message.textContent = `✅ 正解！（${soundToSymbol[selected]}）`;
-          hasAnsweredCorrectly = true; // ✅ 一度正解したら履歴カウントを停止
-          hasAnsweredCorrectly = true; // ✅ 一度正解したら履歴カウントを停止
+          hasAnsweredCorrectly = true;
         } else {
           const correctCell = document.querySelector(`.clickable[data-sound="${correctSound}"]`);
           const symbol = soundToSymbol[correctSound];
           const name = correctCell ? correctCell.dataset.name : "（名称不明）";
           message.textContent = `❌ 不正解。正解は ${symbol}（${name}）です。`;
 
-          // ✅ 一度だけ間違いを記録
           if (!hasAnsweredCorrectly && !hasAlreadyCountedWrong) {
             if (!wrongHistory.includes(correctSound)) {
               wrongHistory.push(correctSound);
             }
             wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
-            hasAlreadyCountedWrong = true; // ✅ 次からはカウントしない
-          // ✅ 一度だけ間違いを記録
-          if (!hasAnsweredCorrectly && !hasAlreadyCountedWrong) {
-            if (!wrongHistory.includes(correctSound)) {
-              wrongHistory.push(correctSound);
-            }
-            wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
-            hasAlreadyCountedWrong = true; // ✅ 次からはカウントしない
-
-            saveHistory();
-            updateHistoryTable();
-          }
+            hasAlreadyCountedWrong = true;
             saveHistory();
             updateHistoryTable();
           }
