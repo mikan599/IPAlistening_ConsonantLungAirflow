@@ -197,6 +197,14 @@ h1 {
   justify-content: center;
 }
 
+.quiz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
 .action-button {
   flex: 1 1 220px;
   padding: 0.85em 1.2em;
