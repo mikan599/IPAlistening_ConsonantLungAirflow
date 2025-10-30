@@ -19,6 +19,23 @@ const NONPULMONIC_FILES = [
   "s132_401.mp3",
 ];
 
+const NONPULMONIC_JA = [
+  "両唇音",
+  "歯音",
+  "（後部）歯茎音",
+  "硬口蓋歯音",
+  "歯茎側面音",
+  "両唇音",
+  "歯音／歯茎音",
+  "硬口蓋音",
+  "軟口蓋音",
+  "口蓋垂音",
+  "両唇音",
+  "歯音／歯茎音",
+  "軟口蓋音",
+  "歯茎摩擦音",
+];
+
 function buildAudioSrc(filename) {
   return new URL(filename, TUFS_AUDIO_BASE).href;
 }
@@ -47,6 +64,46 @@ document.addEventListener("DOMContentLoaded", () => {
   const right = document.querySelectorAll(".np-col-ejectives .np-sound-cell");
   const cells = [...left, ...mid, ...right];
 
+  function getCellGlyph(cell) {
+    if (!cell) return "";
+
+    const storedGlyph = cell.dataset.glyph || cell.getAttribute("data-glyph");
+    if (storedGlyph) {
+      return storedGlyph;
+    }
+
+    const textGlyph = (cell.textContent || "").trim();
+    if (textGlyph) {
+      cell.dataset.glyph = textGlyph;
+      return textGlyph;
+    }
+
+    return "";
+  }
+
+  function attachJaLabelsToNonpulmonicCells(targetCells) {
+    targetCells.forEach((cell, index) => {
+      const ja = NONPULMONIC_JA[index] || "";
+      const glyph = getCellGlyph(cell);
+
+      if (ja && glyph) {
+        cell.setAttribute("aria-label", `${glyph}（${ja}）`);
+      } else if (glyph) {
+        cell.setAttribute("aria-label", glyph);
+      }
+
+      let label = cell.querySelector(".ipa-ja");
+      if (!label) {
+        label = document.createElement("span");
+        label.className = "ipa-ja";
+        cell.appendChild(label);
+      }
+      label.textContent = ja;
+
+      cell.classList.add("has-ja");
+    });
+  }
+
   cells.forEach((cell, index) => {
     const filename = NONPULMONIC_FILES[index];
     if (filename) {
@@ -57,6 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
       cell.classList.remove("is-wired");
     }
   });
+
+  attachJaLabelsToNonpulmonicCells(cells);
 
   const wrongHistory = [];
   const wrongHistoryMap = {};
@@ -132,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     Object.keys(wrongHistoryMap).forEach((sound) => {
       const cell = getCellBySound(sound);
-      const symbol = cell ? cell.textContent.trim() : sound;
+      const symbol = cell ? getCellGlyph(cell) : sound;
       const name = cell ? (cell.dataset.name || "名称不明") : "名称不明";
       const count = wrongHistoryMap[sound];
 
@@ -191,12 +250,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (selected === correctSound) {
-      const symbol = cell.textContent.trim();
+      const symbol = getCellGlyph(cell);
       setMessage(`✅ 正解！（${symbol}）`);
       hasAnsweredCorrectly = true;
     } else {
       const correctCell = getCellBySound(correctSound);
-      const symbol = correctCell ? correctCell.textContent.trim() : correctSound;
+      const symbol = correctCell ? getCellGlyph(correctCell) : correctSound;
       const name = correctCell ? (correctCell.dataset.name || "名称不明") : "名称不明";
       setMessage(`❌ 不正解。正解は ${symbol}（${name}）です。`);
 
