@@ -401,6 +401,12 @@ th {
   display: none;
 }
 
+.nonpulmonic .np-col-clicks,
+.nonpulmonic .np-col-implosives,
+.nonpulmonic .np-col-ejectives {
+  justify-items: center;
+}
+
 .nonpulmonic .np-item {
   display: block;
   width: 100%;
