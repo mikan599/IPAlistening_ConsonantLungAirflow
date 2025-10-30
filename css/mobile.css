@@ -119,3 +119,48 @@ h1 {
   text-align: left;
   padding-top: 16px;
 }
+
+@media (max-width: 640px) {
+  .quiz-controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .quiz-controls .quiz-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    max-width: none;
+    height: 44px;
+    min-height: 44px;
+    padding: 6px 10px;
+    font-size: 14px;
+    line-height: 1;
+    border-radius: 10px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quiz-controls .quiz-btn svg,
+  .quiz-controls .quiz-btn img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nonpulmonic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    align-items: start;
+  }
+
+  .nonpulmonic-grid .np-column {
+    width: auto;
+    max-width: none;
+  }
+}

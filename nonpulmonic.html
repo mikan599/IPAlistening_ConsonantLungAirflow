@@ -36,9 +36,11 @@
                 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
             </div>
             <div class="control-buttons">
-                <button class="action-button primary" onclick="playRandomSound()">🎧 ランダム再生</button>
-                <button class="action-button" onclick="replaySound()">🔁 もう一度聞く</button>
-                <button class="action-button warning" onclick="playWrongSound()">⚠️ 間違いから出題</button>
+                <div class="quiz-controls">
+                    <button class="action-button primary quiz-btn" onclick="playRandomSound()">🎧 ランダム再生</button>
+                    <button class="action-button quiz-btn" onclick="replaySound()">🔁 もう一度聞く</button>
+                    <button class="action-button warning quiz-btn" onclick="playWrongSound()">⚠️ 間違いから出題</button>
+                </div>
             </div>
             <p id="message" class="status-message" role="status" aria-live="polite"></p>
         </section>
@@ -46,7 +48,7 @@
         <section class="ipa-section" aria-label="非肺気流子音一覧">
             <h2 class="section-title">非肺気流子音表</h2>
             <p class="mobile-hint">記号をタップすると音声が再生されます。</p>
-            <div id="nonpulmonic" class="np-sound-grid" role="list">
+            <div id="nonpulmonic" class="np-sound-grid nonpulmonic-grid" role="list">
                 <div class="np-column np-col-clicks" role="group" aria-label="クリック音">
                     <h3 class="np-column-title">クリック音</h3>
                     <button type="button" class="np-sound-cell clickable" data-name="両唇クリック音" aria-label="両唇クリック音 ʘ">ʘ</button>
