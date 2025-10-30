@@ -33,6 +33,26 @@
                 <button class="action-button" onclick="replaySound()">🔁 もう一度聞く</button>
                 <button class="action-button warning" onclick="playWrongSound()">⚠️ 間違いから出題</button>
             </div>
+            <div class="manner-filter" aria-label="出題する調音方法の選択">
+                <div class="manner-filter__header">
+                    <h3 class="manner-filter__title">出題する調音方法</h3>
+                    <div class="manner-filter__actions">
+                        <button type="button" class="chip-button" data-manner-action="select-all">全て選択</button>
+                        <button type="button" class="chip-button" data-manner-action="clear">全て解除</button>
+                    </div>
+                </div>
+                <div class="manner-options" role="group" aria-label="調音方法">
+                    <label class="manner-option"><input type="checkbox" value="破裂音" checked>破裂音</label>
+                    <label class="manner-option"><input type="checkbox" value="鼻音" checked>鼻音</label>
+                    <label class="manner-option"><input type="checkbox" value="ふるえ音" checked>ふるえ音</label>
+                    <label class="manner-option"><input type="checkbox" value="たたき音" checked>たたき音</label>
+                    <label class="manner-option"><input type="checkbox" value="摩擦音" checked>摩擦音</label>
+                    <label class="manner-option"><input type="checkbox" value="側面摩擦音" checked>側面摩擦音</label>
+                    <label class="manner-option"><input type="checkbox" value="接近音" checked>接近音</label>
+                    <label class="manner-option"><input type="checkbox" value="側面接近音" checked>側面接近音</label>
+                </div>
+                <p class="manner-filter__hint">※選択されていない調音方法は出題されません。</p>
+            </div>
             <div class="volume-control">
                 <label for="volumeSlider">🔊 音量</label>
                 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
