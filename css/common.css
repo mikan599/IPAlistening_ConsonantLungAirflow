@@ -73,6 +73,87 @@ h1 {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
+.manner-filter {
+  background: var(--surface-03);
+  border-radius: 20px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.manner-filter__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.manner-filter__title {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.manner-filter__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.chip-button {
+  background: rgba(255, 255, 255, 0.14);
+  border: none;
+  border-radius: 999px;
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.45em 1.1em;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.chip-button:hover,
+.chip-button:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.chip-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
+}
+
+.manner-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.manner-option {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.manner-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.manner-filter__hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 .control-buttons {
   display: flex;
   flex-wrap: wrap;
