@@ -177,4 +177,80 @@ h1 {
   .mobile-title-break {
     display: inline;
   }
+
+  /* —— モバイル時のスクロール＋固定行列 —— */
+  .pulmonic-scroll {
+    --scroll-pad-inline: 16px;
+    padding-inline: var(--scroll-pad-inline);
+    margin-inline: calc(-1 * var(--scroll-pad-inline));
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  .pulmonic-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .pulmonic-table thead th {
+    position: sticky;
+    z-index: 3;
+    background: linear-gradient(135deg, #26a69a, #2bbbad);
+    color: var(--text-main);
+  }
+
+  .pulmonic-table thead tr:first-child th {
+    top: 0;
+  }
+
+  .pulmonic-table thead tr:nth-child(2) th {
+    top: calc(1.2em + 24px);
+  }
+
+  .pulmonic-table thead th:first-child {
+    left: auto !important;
+    z-index: 3;
+  }
+
+  .pulmonic-table thead th,
+  .pulmonic-table tbody th:first-child,
+  .pulmonic-table tbody td:first-child {
+    background-clip: padding-box;
+  }
+
+  .pulmonic-table tbody th:first-child,
+  .pulmonic-table tbody td:first-child {
+    position: sticky;
+    left: calc(-1 * var(--scroll-pad-inline));
+    z-index: 2;
+    background: linear-gradient(135deg, #26a69a, #2bbbad);
+    color: var(--text-main);
+    white-space: nowrap;
+  }
+
+  /* Mobile pulmonic table inherits a 28px radius from .ipa-table-wrapper in common.css; flatten corners while sticky */
+  .pulmonic-scroll,
+  .pulmonic-table {
+    border-radius: 0 !important;
+  }
+
+  .pulmonic-table thead th,
+  .pulmonic-table thead th:first-child,
+  .pulmonic-table thead th:last-child {
+    border-radius: 0 !important;
+  }
+
+  .pulmonic-table tbody th:first-child,
+  .pulmonic-table tbody td:first-child {
+    border-radius: 0 !important;
+  }
+
+  .pulmonic-scroll,
+  .pulmonic-table {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-x pan-y;
+  }
 }
