@@ -393,6 +393,10 @@ th {
   letter-spacing: 0.05em;
 }
 
+.np-column-title .col-title {
+  display: inline-block;
+}
+
 .np-sound-cell {
   display: flex;
   align-items: center;
@@ -415,6 +419,10 @@ th {
   background-color: rgba(66, 165, 245, 0.22);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(66, 165, 245, 0.25);
+}
+
+.mobile-title-break {
+  display: none;
 }
 
 .np-sound-cell:focus-visible {

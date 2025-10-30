@@ -58,9 +58,18 @@
             </div>
             <div class="control-buttons">
                 <div class="quiz-controls">
-                    <button class="action-button primary quiz-btn" onclick="playRandomSound()">🎧 ランダム再生</button>
-                    <button class="action-button quiz-btn" onclick="replaySound()">🔁 もう一度聞く</button>
-                    <button class="action-button warning quiz-btn" onclick="playWrongSound()">⚠️ 間違いから出題</button>
+                    <button class="action-button primary quiz-btn" onclick="playRandomSound()">
+                        <span class="emoji" aria-hidden="true">🎧</span>
+                        <span class="label">ランダム再生</span>
+                    </button>
+                    <button class="action-button quiz-btn" onclick="replaySound()">
+                        <span class="emoji" aria-hidden="true">🔁</span>
+                        <span class="label">もう一度聞く</span>
+                    </button>
+                    <button class="action-button warning quiz-btn" onclick="playWrongSound()">
+                        <span class="emoji" aria-hidden="true">⚠️</span>
+                        <span class="label">間違いから出題</span>
+                    </button>
                 </div>
             </div>
             <p id="message" class="status-message" role="status" aria-live="polite"></p>
