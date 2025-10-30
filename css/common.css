@@ -401,14 +401,18 @@ th {
   display: none;
 }
 
-.nonpulmonic .np-sound-cell {
-  display: inline-flex;
+.nonpulmonic .np-item {
+  display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: flex-start;
   gap: 6px;
   width: 100%;
   text-align: center;
+}
+
+.nonpulmonic .np-sound-cell {
+  display: inline-block;
+  width: 100%;
 }
 
 .nonpulmonic .np-glyph-btn {
@@ -443,14 +447,14 @@ th {
   outline-offset: 2px;
 }
 
-.nonpulmonic .np-ja {
+.nonpulmonic .np-item .np-ja {
   display: block;
   max-width: 100%;
-  font-size: clamp(11px, 2.6vw, 13px);
-  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
+  font-size: clamp(11px, 2.6vw, 13px);
+  line-height: 1.2;
   color: var(--ipa-ja-fg, #cfd6de);
   text-align: center;
   pointer-events: none;

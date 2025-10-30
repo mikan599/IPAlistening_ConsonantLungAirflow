@@ -164,11 +164,29 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
+  function ensureItemWrapper(cell) {
+    if (!cell) return null;
+
+    let wrapper = cell.parentElement;
+    if (!wrapper || !wrapper.classList || !wrapper.classList.contains("np-item")) {
+      wrapper = document.createElement("div");
+      wrapper.className = "np-item";
+      const parent = cell.parentNode;
+      if (parent) {
+        parent.insertBefore(wrapper, cell);
+      }
+      wrapper.appendChild(cell);
+    }
+
+    return wrapper;
+  }
+
   function attachJaLabelsToNonpulmonicCells(targetCells) {
     targetCells.forEach((cell, index) => {
       const ja = NONPULMONIC_JA[index] || "";
       const button = cell.querySelector(".np-glyph-btn");
       const glyph = getCellGlyph(cell);
+      const wrapper = ensureItemWrapper(cell);
 
       if (ja) {
         cell.dataset.name = ja;
@@ -192,12 +210,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      let label = cell.querySelector(".np-ja");
+      if (!wrapper) {
+        return;
+      }
+
+      let label = wrapper.querySelector(".np-ja");
+      if (!label) {
+        label = cell.querySelector(".np-ja");
+      }
       if (!label) {
         label = document.createElement("div");
         label.className = "np-ja";
         label.setAttribute("aria-hidden", "true");
-        cell.appendChild(label);
+      }
+
+      if (label.parentElement !== wrapper) {
+        wrapper.appendChild(label);
       }
       label.textContent = ja;
 
