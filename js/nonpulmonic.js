@@ -1,318 +1,266 @@
-import { buildAudioSrcById, reportAudioError } from "./audioSources.js";
+const TUFS_AUDIO_BASE = "https://www.coelang.tufs.ac.jp/ipa/sounds/";
+const NONPULMONIC_FILES = [
+  // クリック音
+  "s176.mp3",
+  "s177.mp3",
+  "s178.mp3",
+  "s179.mp3",
+  "s180.mp3",
+  // 内破音
+  "s160.mp3",
+  "s162.mp3",
+  "s164.mp3",
+  "s166.mp3",
+  "s168.mp3",
+  // 放出音
+  "s101_401.mp3",
+  "s103_401.mp3",
+  "s109_401.mp3",
+  "s132_401.mp3",
+];
 
-const soundToSymbol = {
-  s201: "ʘ",
-  s202: "ǀ",
-  s203: "ǁ",
-  s204: "ǂ",
-  s205: "ǃ",
-  s206: "ɓ",
-  s207: "ɗ",
-  s208: "ᶑ",
-  s209: "ʄ",
-  s210: "ɠ",
-  s211: "ʛ",
-  s212: "kʼ",
-  s213: "tʼ",
-  s214: "qʼ",
-  s215: "sʼ"
-};
+function buildAudioSrc(filename) {
+  return new URL(filename, TUFS_AUDIO_BASE).href;
+}
 
-const mannerGroups = {
-  "クリック音": ["s201", "s202", "s203", "s204", "s205"],
-  "内破音": ["s206", "s207", "s208", "s209", "s210", "s211"],
-  "放出音": ["s212", "s213", "s214", "s215"]
-};
+const npPlayer = new Audio();
+npPlayer.preload = "auto";
 
-const wrongHistoryKey = "nonpulmonicWrongHistory";
-const wrongHistoryMapKey = "nonpulmonicWrongHistoryMap";
+const VOLUME_STORAGE_KEY = "ipaVolume";
+const WRONG_HISTORY_KEY = "npWrongHistory";
+const WRONG_HISTORY_MAP_KEY = "npWrongHistoryMap";
+
+function playByFilename(filename) {
+  if (!filename) return;
+
+  npPlayer.pause();
+  npPlayer.src = buildAudioSrc(filename);
+  npPlayer.currentTime = 0;
+  npPlayer.play().catch(() => {});
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-  const audioPlayer = document.getElementById("audioPlayer");
   const message = document.getElementById("message");
-  let correctSound = "";
+  const volumeSlider = document.getElementById("volumeSlider");
+  const left = document.querySelectorAll(".np-col-clicks .np-sound-cell");
+  const mid = document.querySelectorAll(".np-col-implosives .np-sound-cell");
+  const right = document.querySelectorAll(".np-col-ejectives .np-sound-cell");
+  const cells = [...left, ...mid, ...right];
+
+  cells.forEach((cell, index) => {
+    const filename = NONPULMONIC_FILES[index];
+    if (filename) {
+      cell.dataset.sound = filename;
+      cell.classList.add("is-wired");
+    } else {
+      delete cell.dataset.sound;
+      cell.classList.remove("is-wired");
+    }
+  });
+
   const wrongHistory = [];
   const wrongHistoryMap = {};
-  const selectedManners = new Set(Object.keys(mannerGroups));
-
-  let currentSoundSource = "";
-  let currentSoundId = "";
-  let pendingSuccessMessage = "";
-  let pendingFailureMessage = "";
-
-  function handlePlaybackSuccess() {
-    if (pendingSuccessMessage) {
-      message.textContent = pendingSuccessMessage;
-    }
-    pendingSuccessMessage = "";
-    pendingFailureMessage = "";
-  }
-
-  function handlePlaybackFailure() {
-    if (!pendingFailureMessage) return;
-    message.textContent = pendingFailureMessage;
-    pendingFailureMessage = "";
-  }
-
-  function tryPlayCurrentSource() {
-    if (!currentSoundSource) {
-      handlePlaybackFailure();
-      return;
-    }
-
-    audioPlayer.src = currentSoundSource;
-    const playPromise = audioPlayer.play();
-
-    if (!playPromise) {
-      handlePlaybackSuccess();
-      return;
-    }
-
-    playPromise
-      .then(() => {
-        handlePlaybackSuccess();
-      })
-      .catch((error) => {
-        if (error && error.name === "NotAllowedError") {
-          message.textContent = "🔇 ブラウザが自動再生をブロックしました。画面を操作してから再試行してください。";
-          pendingFailureMessage = "";
-          pendingSuccessMessage = "";
-        }
-      });
-  }
-
-  audioPlayer.addEventListener("error", () => {
-    const failedSource = currentSoundSource;
-    handlePlaybackFailure();
-    if (!failedSource) {
-      return;
-    }
-
-    // 実際にアクセスしたURLとステータスを記録して、404/403などの失敗原因を把握しやすくする。
-    reportAudioError(failedSource, audioPlayer.error).then((result) => {
-      if (result && result.status === 404 && currentSoundId) {
-        const symbol = soundToSymbol[currentSoundId] || currentSoundId;
-        message.textContent = `📁 音源未登録の可能性があります。（記号: ${symbol}）`;
-      }
-    });
-  });
-
-  function playSound(soundID, { successMessage = "", failureMessage } = {}) {
-    currentSoundId = soundID;
-    currentSoundSource = buildAudioSrcById(soundID);
-    pendingSuccessMessage = successMessage;
-    pendingFailureMessage =
-      failureMessage ||
-      `⚠️ 音声の読み込みに失敗しました。音源が登録されていないか、通信環境をご確認ください。（記号: ${soundToSymbol[soundID] || soundID}）`;
-
-    audioPlayer.pause();
-    audioPlayer.removeAttribute("src");
-    audioPlayer.load();
-
-    tryPlayCurrentSource();
-  }
-
-  const volumeSlider = document.getElementById("volumeSlider");
-  volumeSlider.addEventListener("input", () => {
-    audioPlayer.volume = volumeSlider.value;
-  });
-
-  function replaySound() {
-    if (!correctSound) {
-      message.textContent = "🎧 まずは新しい音声を再生してください。";
-      return;
-    }
-
-    playSound(correctSound, {
-      successMessage: "🔁 もう一度再生しました",
-      failureMessage: "⚠️ 音声を再生できませんでした。音源が登録されていないか、通信環境をご確認ください。"
-    });
-  }
-
-  function getSelectedSoundPool() {
-    if (selectedManners.size === 0) {
-      return [];
-    }
-
-    const pool = new Set();
-    selectedManners.forEach((manner) => {
-      const sounds = mannerGroups[manner];
-      if (!sounds) return;
-      sounds.forEach((soundID) => {
-        if (soundToSymbol[soundID]) {
-          pool.add(soundID);
-        }
-      });
-    });
-
-    return Array.from(pool);
-  }
-
+  let correctSound = "";
   let hasAnsweredCorrectly = false;
   let hasAlreadyCountedWrong = false;
 
-  function playRandomSound() {
-    const soundPool = getSelectedSoundPool();
+  function setMessage(text) {
+    if (message) {
+      message.textContent = text;
+    }
+  }
 
-    if (soundPool.length === 0) {
-      message.textContent = "⚠️ 出題する子音の種類が選択されていません。";
+  function getWiredCells() {
+    return cells.filter((cell) => cell.dataset.sound);
+  }
+
+  function getCellBySound(sound) {
+    return document.querySelector(`.np-sound-cell[data-sound="${sound}"]`);
+  }
+
+  function replaySound() {
+    if (correctSound) {
+      playByFilename(correctSound);
+      setMessage("🔁 もう一度再生しました");
+    } else {
+      setMessage("🎧 まずは新しい音声を再生してください。");
+    }
+  }
+
+  function playRandomSound() {
+    const targets = getWiredCells();
+
+    if (targets.length === 0) {
+      setMessage("⚠️ 再生できる記号が見つかりませんでした。");
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * soundPool.length);
-    correctSound = soundPool[randomIndex];
+    const randomIndex = Math.floor(Math.random() * targets.length);
+    const cell = targets[randomIndex];
+    const filename = cell.dataset.sound;
+
+    correctSound = filename || "";
     hasAnsweredCorrectly = false;
     hasAlreadyCountedWrong = false;
-    playSound(correctSound, {
-      successMessage: "再生しました。正しい記号をクリックしてください。",
-      failureMessage: "⚠️ 音声の読み込みに失敗しました。音源が登録されていないか、通信環境をご確認ください。"
-    });
+
+    playByFilename(filename);
+    setMessage("再生しました。正しい記号をクリックしてください。");
   }
 
   function playWrongSound() {
     if (wrongHistory.length === 0) {
-      message.textContent = "🎉 間違いはありません！すべて正解です。";
+      setMessage("🎉 間違いはありません！すべて正解です。");
       return;
     }
 
     const randomIndex = Math.floor(Math.random() * wrongHistory.length);
-    correctSound = wrongHistory[randomIndex];
+    const filename = wrongHistory[randomIndex];
+
+    correctSound = filename;
     hasAnsweredCorrectly = false;
     hasAlreadyCountedWrong = false;
-    playSound(correctSound, {
-      successMessage: "❓ 間違った問題から再出題しました。正しい記号を選んでください。",
-      failureMessage: "⚠️ 音声の読み込みに失敗しました。音源が登録されていないか、通信環境をご確認ください。"
-    });
+
+    playByFilename(filename);
+    setMessage("❓ 間違った問題から再出題しました。正しい記号を選んでください。");
   }
 
   function updateHistoryTable() {
     const tbody = document.querySelector("#historyTable tbody");
+    if (!tbody) return;
+
     tbody.innerHTML = "";
 
-    for (const soundID in wrongHistoryMap) {
-      const symbol = soundToSymbol[soundID];
-      const cell = document.querySelector(`.clickable[data-sound="${soundID}"]`);
-      const name = cell ? cell.dataset.name : "（名称不明）";
-      const count = wrongHistoryMap[soundID];
+    Object.keys(wrongHistoryMap).forEach((sound) => {
+      const cell = getCellBySound(sound);
+      const symbol = cell ? cell.textContent.trim() : sound;
+      const name = cell ? (cell.dataset.name || "名称不明") : "名称不明";
+      const count = wrongHistoryMap[sound];
 
       const row = document.createElement("tr");
       row.innerHTML = `<td>${symbol}</td><td>${name}</td><td>${count}</td>`;
       tbody.appendChild(row);
-    }
+    });
   }
 
   function saveHistory() {
-    localStorage.setItem(wrongHistoryKey, JSON.stringify(wrongHistory));
-    localStorage.setItem(wrongHistoryMapKey, JSON.stringify(wrongHistoryMap));
+    localStorage.setItem(WRONG_HISTORY_KEY, JSON.stringify(wrongHistory));
+    localStorage.setItem(WRONG_HISTORY_MAP_KEY, JSON.stringify(wrongHistoryMap));
   }
 
   function loadHistory() {
-    const wh = localStorage.getItem(wrongHistoryKey);
-    const wm = localStorage.getItem(wrongHistoryMapKey);
-    if (wh) wrongHistory.push(...JSON.parse(wh));
-    if (wm) Object.assign(wrongHistoryMap, JSON.parse(wm));
+    const storedHistory = localStorage.getItem(WRONG_HISTORY_KEY);
+    const storedMap = localStorage.getItem(WRONG_HISTORY_MAP_KEY);
+
+    if (storedHistory) {
+      try {
+        const parsed = JSON.parse(storedHistory);
+        if (Array.isArray(parsed)) {
+          wrongHistory.push(...parsed);
+        }
+      } catch (error) {
+        console.error("Failed to parse nonpulmonic wrong history", error);
+      }
+    }
+
+    if (storedMap) {
+      try {
+        const parsedMap = JSON.parse(storedMap);
+        if (parsedMap && typeof parsedMap === "object") {
+          Object.assign(wrongHistoryMap, parsedMap);
+        }
+      } catch (error) {
+        console.error("Failed to parse nonpulmonic wrong history map", error);
+      }
+    }
+
     updateHistoryTable();
   }
 
   function clearHistory() {
     wrongHistory.length = 0;
-    for (const key in wrongHistoryMap) {
-      delete wrongHistoryMap[key];
-    }
-    localStorage.removeItem(wrongHistoryKey);
-    localStorage.removeItem(wrongHistoryMapKey);
+    Object.keys(wrongHistoryMap).forEach((key) => delete wrongHistoryMap[key]);
+    localStorage.removeItem(WRONG_HISTORY_KEY);
+    localStorage.removeItem(WRONG_HISTORY_MAP_KEY);
     updateHistoryTable();
-    message.textContent = "🧹 履歴をクリアしました";
+    setMessage("🧹 履歴をクリアしました");
   }
 
-  function setupClickListeners() {
-    document.querySelectorAll(".clickable").forEach((cell) => {
+  function handleAnswer(selected, cell) {
+    if (!correctSound) {
+      return;
+    }
+
+    if (selected === correctSound) {
+      const symbol = cell.textContent.trim();
+      setMessage(`✅ 正解！（${symbol}）`);
+      hasAnsweredCorrectly = true;
+    } else {
+      const correctCell = getCellBySound(correctSound);
+      const symbol = correctCell ? correctCell.textContent.trim() : correctSound;
+      const name = correctCell ? (correctCell.dataset.name || "名称不明") : "名称不明";
+      setMessage(`❌ 不正解。正解は ${symbol}（${name}）です。`);
+
+      if (!hasAnsweredCorrectly && !hasAlreadyCountedWrong) {
+        if (!wrongHistory.includes(correctSound)) {
+          wrongHistory.push(correctSound);
+        }
+        wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
+        hasAlreadyCountedWrong = true;
+        saveHistory();
+        updateHistoryTable();
+      }
+    }
+  }
+
+  function setupCellListeners() {
+    cells.forEach((cell) => {
       cell.addEventListener("click", () => {
         const selected = cell.dataset.sound;
-        if (!selected) return;
 
-        playSound(selected, {
-          failureMessage: `⚠️ 音声の読み込みに失敗しました。音源が登録されていないか、通信環境をご確認ください。（記号: ${soundToSymbol[selected] || selected}）`
-        });
-
-        if (!correctSound) return;
-
-        if (selected === correctSound) {
-          message.textContent = `✅ 正解！（${soundToSymbol[selected]}）`;
-          hasAnsweredCorrectly = true;
-        } else {
-          const correctCell = document.querySelector(`.clickable[data-sound="${correctSound}"]`);
-          const symbol = soundToSymbol[correctSound];
-          const name = correctCell ? correctCell.dataset.name : "（名称不明）";
-          message.textContent = `❌ 不正解。正解は ${symbol}（${name}）です。`;
-
-          if (!hasAnsweredCorrectly && !hasAlreadyCountedWrong) {
-            if (!wrongHistory.includes(correctSound)) {
-              wrongHistory.push(correctSound);
-            }
-            wrongHistoryMap[correctSound] = (wrongHistoryMap[correctSound] || 0) + 1;
-            hasAlreadyCountedWrong = true;
-            saveHistory();
-            updateHistoryTable();
-          }
+        if (selected) {
+          playByFilename(selected);
         }
+
+        handleAnswer(selected, cell);
       });
     });
   }
 
-  function setupMannerFilter() {
-    const mannerCheckboxes = document.querySelectorAll('.manner-option input[type="checkbox"]');
-    mannerCheckboxes.forEach((checkbox) => {
-      checkbox.addEventListener("change", () => {
-        if (checkbox.checked) {
-          selectedManners.add(checkbox.value);
-        } else {
-          selectedManners.delete(checkbox.value);
-        }
-      });
-    });
+  function setupVolumeControl() {
+    if (!volumeSlider) return;
 
-    const selectAllButton = document.querySelector('[data-manner-action="select-all"]');
-    const clearButton = document.querySelector('[data-manner-action="clear"]');
-
-    if (selectAllButton) {
-      selectAllButton.addEventListener("click", () => {
-        mannerCheckboxes.forEach((checkbox) => {
-          checkbox.checked = true;
-          selectedManners.add(checkbox.value);
-        });
-      });
-    }
-
-    if (clearButton) {
-      clearButton.addEventListener("click", () => {
-        mannerCheckboxes.forEach((checkbox) => {
-          checkbox.checked = false;
-        });
-        selectedManners.clear();
-      });
-    }
-  }
-
-  function loadVolumePreference() {
-    const savedVolume = localStorage.getItem("ipaVolume");
+    const savedVolume = localStorage.getItem(VOLUME_STORAGE_KEY);
     if (savedVolume !== null) {
-      audioPlayer.volume = parseFloat(savedVolume);
-      volumeSlider.value = savedVolume;
+      const parsed = parseFloat(savedVolume);
+      if (!Number.isNaN(parsed)) {
+        npPlayer.volume = parsed;
+        volumeSlider.value = parsed.toString();
+      }
+    } else {
+      const sliderValue = parseFloat(volumeSlider.value);
+      npPlayer.volume = Number.isNaN(sliderValue) ? 1 : sliderValue;
     }
+
+    volumeSlider.addEventListener("input", (event) => {
+      const value = parseFloat(event.target.value);
+      if (!Number.isNaN(value)) {
+        npPlayer.volume = value;
+      }
+    });
 
     volumeSlider.addEventListener("change", () => {
-      localStorage.setItem("ipaVolume", volumeSlider.value);
+      localStorage.setItem(VOLUME_STORAGE_KEY, volumeSlider.value);
     });
   }
 
-  window.replaySound = replaySound;
+  loadHistory();
+  setupCellListeners();
+  setupVolumeControl();
+
   window.playRandomSound = playRandomSound;
+  window.replaySound = replaySound;
   window.playWrongSound = playWrongSound;
   window.clearHistory = clearHistory;
-
-  loadVolumePreference();
-  loadHistory();
-  setupClickListeners();
-  setupMannerFilter();
 });
+
+export { TUFS_AUDIO_BASE, NONPULMONIC_FILES, buildAudioSrc, playByFilename };
