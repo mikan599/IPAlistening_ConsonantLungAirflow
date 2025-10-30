@@ -231,6 +231,23 @@ h1 {
     white-space: nowrap;
   }
 
+  /* Mobile pulmonic table inherits a 28px radius from .ipa-table-wrapper in common.css; flatten corners while sticky */
+  .pulmonic-scroll,
+  .pulmonic-table {
+    border-radius: 0 !important;
+  }
+
+  .pulmonic-table thead th,
+  .pulmonic-table thead th:first-child,
+  .pulmonic-table thead th:last-child {
+    border-radius: 0 !important;
+  }
+
+  .pulmonic-table tbody th:first-child,
+  .pulmonic-table tbody td:first-child {
+    border-radius: 0 !important;
+  }
+
   .pulmonic-scroll,
   .pulmonic-table {
     -webkit-tap-highlight-color: transparent;
