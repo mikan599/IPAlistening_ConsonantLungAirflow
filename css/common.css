@@ -393,6 +393,10 @@ th {
   letter-spacing: 0.05em;
 }
 
+.np-column-title .col-title {
+  display: inline-block;
+}
+
 .np-sound-cell {
   display: flex;
   align-items: center;
@@ -415,6 +419,10 @@ th {
   background-color: rgba(66, 165, 245, 0.22);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(66, 165, 245, 0.25);
+}
+
+.mobile-title-break {
+  display: none;
 }
 
 .np-sound-cell:focus-visible {
@@ -507,4 +515,44 @@ audio {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+/* --- quiz ボタンの選択残り・塗りつぶし対策（PC/モバイル共通） --- */
+.quiz-controls .quiz-btn,
+.quiz-controls .quiz-btn * {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* .label 等に付いているバッジ風の背景/角丸/影を無効化（ここだけスコープ） */
+.quiz-controls .quiz-btn .label,
+.quiz-controls .quiz-btn .btn-label,
+.quiz-controls .quiz-btn .text {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0;
+  color: inherit;
+  display: inline;
+  line-height: 1.1;
+}
+
+/* テキスト選択ハイライト色を無効化（常時選択っぽく見えるのを防止） */
+.quiz-controls .quiz-btn ::selection {
+  background: transparent;
+  color: inherit;
+}
+
+.quiz-controls .quiz-btn ::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+/* フォーカスは見えるように（アクセシビリティ維持） */
+.quiz-controls .quiz-btn:focus-visible {
+  outline: 2px solid #69f;
+  outline-offset: 2px;
 }

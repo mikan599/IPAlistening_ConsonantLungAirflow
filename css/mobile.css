@@ -132,18 +132,28 @@ h1 {
   .quiz-controls .quiz-btn {
     flex: 1 1 0;
     min-width: 0;
-    width: auto;
-    max-width: none;
-    height: 44px;
-    min-height: 44px;
-    padding: 6px 10px;
-    font-size: 14px;
-    line-height: 1;
-    border-radius: 10px;
-    white-space: nowrap;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    gap: 2px;
+    height: 60px;
+    min-height: 60px;
+    padding: 4px 6px;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  .quiz-controls .quiz-btn .emoji {
+    line-height: 1;
+    display: block;
+  }
+
+  .quiz-controls .quiz-btn .label {
+    display: block;
+    white-space: nowrap;
+    line-height: 1.1;
+    font-size: clamp(10px, 3.2vw, 13px);
   }
 
   .quiz-controls .quiz-btn svg,
@@ -162,5 +172,9 @@ h1 {
   .nonpulmonic-grid .np-column {
     width: auto;
     max-width: none;
+  }
+
+  .mobile-title-break {
+    display: inline;
   }
 }

@@ -37,9 +37,18 @@
             </div>
             <div class="control-buttons">
                 <div class="quiz-controls">
-                    <button class="action-button primary quiz-btn" onclick="playRandomSound()">🎧 ランダム再生</button>
-                    <button class="action-button quiz-btn" onclick="replaySound()">🔁 もう一度聞く</button>
-                    <button class="action-button warning quiz-btn" onclick="playWrongSound()">⚠️ 間違いから出題</button>
+                    <button class="action-button primary quiz-btn" onclick="playRandomSound()">
+                        <span class="emoji" aria-hidden="true">🎧</span>
+                        <span class="label">ランダム再生</span>
+                    </button>
+                    <button class="action-button quiz-btn" onclick="replaySound()">
+                        <span class="emoji" aria-hidden="true">🔁</span>
+                        <span class="label">もう一度聞く</span>
+                    </button>
+                    <button class="action-button warning quiz-btn" onclick="playWrongSound()">
+                        <span class="emoji" aria-hidden="true">⚠️</span>
+                        <span class="label">間違いから出題</span>
+                    </button>
                 </div>
             </div>
             <p id="message" class="status-message" role="status" aria-live="polite"></p>
@@ -49,16 +58,16 @@
             <h2 class="section-title">非肺気流子音表</h2>
             <p class="mobile-hint">記号をタップすると音声が再生されます。</p>
             <div id="nonpulmonic" class="np-sound-grid nonpulmonic-grid" role="list">
-                <div class="np-column np-col-clicks" role="group" aria-label="クリック音">
-                    <h3 class="np-column-title">クリック音</h3>
+                <div class="np-column np-col-clicks" role="group" aria-label="吸着音">
+                    <h3 class="np-column-title"><span class="col-title">吸着<br class="mobile-title-break">音</span></h3>
                     <button type="button" class="np-sound-cell clickable" data-name="両唇クリック音" aria-label="両唇クリック音 ʘ">ʘ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="歯クリック音" aria-label="歯クリック音 ǀ">ǀ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="側面クリック音" aria-label="側面クリック音 ǁ">ǁ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="硬口蓋クリック音" aria-label="硬口蓋クリック音 ǂ">ǂ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="後部歯茎クリック音" aria-label="後部歯茎クリック音 ǃ">ǃ</button>
                 </div>
-                <div class="np-column np-col-implosives" role="group" aria-label="内破音">
-                    <h3 class="np-column-title">内破音</h3>
+                <div class="np-column np-col-implosives" role="group" aria-label="有声入破音">
+                    <h3 class="np-column-title"><span class="col-title">有声入破<br class="mobile-title-break">音</span></h3>
                     <button type="button" class="np-sound-cell clickable" data-name="両唇内破音" aria-label="両唇内破音 ɓ">ɓ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="歯茎内破音" aria-label="歯茎内破音 ɗ">ɗ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="そり舌内破音" aria-label="そり舌内破音 ᶑ">ᶑ</button>
@@ -66,7 +75,7 @@
                     <button type="button" class="np-sound-cell clickable" data-name="軟口蓋内破音" aria-label="軟口蓋内破音 ɠ">ɠ</button>
                 </div>
                 <div class="np-column np-col-ejectives" role="group" aria-label="放出音">
-                    <h3 class="np-column-title">放出音</h3>
+                    <h3 class="np-column-title"><span class="col-title">放出<br class="mobile-title-break">音</span></h3>
                     <button type="button" class="np-sound-cell clickable" data-name="歯茎放出音" aria-label="歯茎放出音 tʼ">tʼ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="軟口蓋放出音" aria-label="軟口蓋放出音 kʼ">kʼ</button>
                     <button type="button" class="np-sound-cell clickable" data-name="口蓋垂放出音" aria-label="口蓋垂放出音 qʼ">qʼ</button>
