@@ -23,8 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const wrongHistory = [];
   const wrongHistoryMap = {};
   const volumeSlider = document.getElementById("volumeSlider");
+  const savedVolume = localStorage.getItem("ipaVolume");
+  if (savedVolume !== null) {
+    audioPlayer.volume = parseFloat(savedVolume);
+    volumeSlider.value = savedVolume;
+  }
   volumeSlider.addEventListener("input", () => {
     audioPlayer.volume = volumeSlider.value;
+  });
+  volumeSlider.addEventListener("change", () => {
+    localStorage.setItem("ipaVolume", volumeSlider.value);
   });
 
   const soundToSymbol = {
