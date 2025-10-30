@@ -40,6 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
     s155: "l", s156: "ɭ", s157: "ʎ", s158: "ʟ", s184: "ⱱ"
   };
 
+  const mannerGroups = {
+    "破裂音": ["s101", "s102", "s103", "s104", "s105", "s106", "s107", "s108", "s109", "s110", "s111", "s112", "s113"],
+    "鼻音": ["s114", "s115", "s116", "s117", "s118", "s119", "s120"],
+    "ふるえ音": ["s121", "s122", "s123"],
+    "たたき音": ["s184", "s124", "s125"],
+    "摩擦音": ["s126", "s127", "s128", "s129", "s130", "s131", "s132", "s133", "s134", "s135", "s136", "s137", "s138", "s139", "s140", "s141", "s142", "s143", "s144", "s145", "s146", "s147"],
+    "側面摩擦音": ["s148", "s149"],
+    "接近音": ["s150", "s151", "s152", "s153", "s154"],
+    "側面接近音": ["s155", "s156", "s157", "s158"]
+  };
+
+  const selectedManners = new Set(Object.keys(mannerGroups));
+
   function getAudioUrl(soundID) {
     return `https://www.coelang.tufs.ac.jp/ipa/sounds/${soundID}.mp3`;
   }
@@ -57,10 +70,35 @@ document.addEventListener("DOMContentLoaded", () => {
   let hasAnsweredCorrectly = false;
   let hasAlreadyCountedWrong = false;
 
+  function getSelectedSoundPool() {
+    if (selectedManners.size === 0) {
+      return [];
+    }
+
+    const pool = new Set();
+    selectedManners.forEach((manner) => {
+      const sounds = mannerGroups[manner];
+      if (!sounds) return;
+      sounds.forEach((soundID) => {
+        if (soundToSymbol[soundID]) {
+          pool.add(soundID);
+        }
+      });
+    });
+
+    return Array.from(pool);
+  }
+
   function playRandomSound() {
-    const soundKeys = Object.keys(soundToSymbol);
-    const randomIndex = Math.floor(Math.random() * soundKeys.length);
-    correctSound = soundKeys[randomIndex];
+    const soundPool = getSelectedSoundPool();
+
+    if (soundPool.length === 0) {
+      message.textContent = "⚠️ 調音方法が選択されていません。出題範囲を選択してください。";
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * soundPool.length);
+    correctSound = soundPool[randomIndex];
     hasAnsweredCorrectly = false;
     hasAlreadyCountedWrong = false;
     audioPlayer.src = getAudioUrl(correctSound);
@@ -155,6 +193,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function setupMannerFilter() {
+    const mannerCheckboxes = document.querySelectorAll('.manner-option input[type="checkbox"]');
+    mannerCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          selectedManners.add(checkbox.value);
+        } else {
+          selectedManners.delete(checkbox.value);
+        }
+      });
+    });
+
+    const selectAllButton = document.querySelector('[data-manner-action="select-all"]');
+    const clearButton = document.querySelector('[data-manner-action="clear"]');
+
+    if (selectAllButton) {
+      selectAllButton.addEventListener("click", () => {
+        mannerCheckboxes.forEach((checkbox) => {
+          checkbox.checked = true;
+          selectedManners.add(checkbox.value);
+        });
+      });
+    }
+
+    if (clearButton) {
+      clearButton.addEventListener("click", () => {
+        mannerCheckboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+        selectedManners.clear();
+      });
+    }
+  }
+
   window.replaySound = replaySound;
   window.playRandomSound = playRandomSound;
   window.playWrongSound = playWrongSound;
@@ -162,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadHistory();
   setupClickListeners();
+  setupMannerFilter();
 
   /* firebass認証を一時的に無効化
   onAuthStateChanged(auth, (user) => {
