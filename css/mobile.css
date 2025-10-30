@@ -28,13 +28,15 @@ h1 {
   max-width: none;
   width: 100%;
   font-size: 1rem;
-  padding: 0.6em 1em;
+  padding: 0.45em 1em;
+  line-height: 1.2;
 }
 
 .action-button.subtle {
   width: 100%;
   font-size: 0.9rem;
-  padding: 0.5em 1.1em;
+  padding: 0.45em 1.1em;
+  line-height: 1.2;
 }
 
 .volume-control {
