@@ -56,10 +56,10 @@
                 </div>
                 <p class="manner-filter__hint">※選択されていない調音方法は出題されません。</p>
             </div>
-            <div class="control-buttons">
-                <button class="action-button primary" onclick="playRandomSound()">🎧 ランダム再生</button>
-                <button class="action-button" onclick="replaySound()">🔁 もう一度聞く</button>
-                <button class="action-button warning" onclick="playWrongSound()">⚠️ 間違いから出題</button>
+            <div class="control-buttons playback-controls">
+                <button class="action-button primary playback-btn" onclick="playRandomSound()">🎧 ランダム再生</button>
+                <button class="action-button playback-btn" onclick="replaySound()">🔁 もう一度聞く</button>
+                <button class="action-button warning playback-btn" onclick="playWrongSound()">⚠️ 間違いから出題</button>
             </div>
             <p id="message" class="status-message" role="status" aria-live="polite"></p>
         </section>

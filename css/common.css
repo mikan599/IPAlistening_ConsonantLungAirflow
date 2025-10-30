@@ -274,6 +274,38 @@ h1 {
   gap: 12px;
 }
 
+@media (max-width: 640px) {
+  .playback-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-block: 8px;
+  }
+
+  .playback-controls .playback-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    height: 44px;
+    min-height: 44px;
+    padding: 6px 10px;
+    font-size: 14px;
+    line-height: 1;
+    border-radius: 10px;
+    white-space: nowrap;
+    width: auto;
+  }
+
+  .playback-controls .playback-btn svg,
+  .playback-controls .playback-btn img {
+    width: 18px;
+    height: 18px;
+  }
+}
+
 .section-title {
   margin: 0;
   font-size: 1.6rem;
