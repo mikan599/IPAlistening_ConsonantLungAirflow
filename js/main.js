@@ -1,6 +1,7 @@
 // Firebase モジュールの読み込み
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+import { buildAudioSrcById } from "./audioSources.js"; // Netlify Functions 経由の音声URLを共通管理する
 
 // Firebase 設定
 const firebaseConfig = {
@@ -23,8 +24,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const wrongHistory = [];
   const wrongHistoryMap = {};
   const volumeSlider = document.getElementById("volumeSlider");
+  const savedVolume = localStorage.getItem("ipaVolume");
+  if (savedVolume !== null) {
+    audioPlayer.volume = parseFloat(savedVolume);
+    volumeSlider.value = savedVolume;
+  }
   volumeSlider.addEventListener("input", () => {
     audioPlayer.volume = volumeSlider.value;
+  });
+  volumeSlider.addEventListener("change", () => {
+    localStorage.setItem("ipaVolume", volumeSlider.value);
   });
 
   const soundToSymbol = {
@@ -53,13 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const selectedManners = new Set(Object.keys(mannerGroups));
 
-  function getAudioUrl(soundID) {
-    return `https://www.coelang.tufs.ac.jp/ipa/sounds/${soundID}.mp3`;
-  }
-
   function replaySound() {
     if (correctSound) {
-      audioPlayer.src = getAudioUrl(correctSound);
+      audioPlayer.src = buildAudioSrcById(correctSound);
       audioPlayer.play();
       message.textContent = `🔁 もう一度再生しました`;
     } else {
@@ -101,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     correctSound = soundPool[randomIndex];
     hasAnsweredCorrectly = false;
     hasAlreadyCountedWrong = false;
-    audioPlayer.src = getAudioUrl(correctSound);
+    audioPlayer.src = buildAudioSrcById(correctSound);
     audioPlayer.play();
     message.textContent = "再生しました。正しい記号をクリックしてください。";
   }
@@ -115,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     correctSound = wrongHistory[randomIndex];
     hasAnsweredCorrectly = false;
     hasAlreadyCountedWrong = false;
-    audioPlayer.src = getAudioUrl(correctSound);
+    audioPlayer.src = buildAudioSrcById(correctSound);
     audioPlayer.play();
     message.textContent = "❓ 間違った問題から再出題しました。正しい記号を選んでください。";
   }
@@ -164,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const selected = cell.dataset.sound;
 
         if (selected) {
-          audioPlayer.src = getAudioUrl(selected);
+          audioPlayer.src = buildAudioSrcById(selected);
           audioPlayer.play();
         }
 
