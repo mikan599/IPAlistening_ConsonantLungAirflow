@@ -28,10 +28,9 @@
         </header>
 
         <section class="control-panel" aria-label="再生コントロール">
-            <div class="control-buttons">
-                <button class="action-button primary" onclick="playRandomSound()">🎧 ランダム再生</button>
-                <button class="action-button" onclick="replaySound()">🔁 もう一度聞く</button>
-                <button class="action-button warning" onclick="playWrongSound()">⚠️ 間違いから出題</button>
+            <div class="volume-control">
+                <label for="volumeSlider">🔊 音量</label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
             </div>
             <div class="manner-filter" aria-label="出題する調音方法の選択">
                 <div class="manner-filter__header">
@@ -53,9 +52,10 @@
                 </div>
                 <p class="manner-filter__hint">※選択されていない調音方法は出題されません。</p>
             </div>
-            <div class="volume-control">
-                <label for="volumeSlider">🔊 音量</label>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            <div class="control-buttons">
+                <button class="action-button primary" onclick="playRandomSound()">🎧 ランダム再生</button>
+                <button class="action-button" onclick="replaySound()">🔁 もう一度聞く</button>
+                <button class="action-button warning" onclick="playWrongSound()">⚠️ 間違いから出題</button>
             </div>
             <p id="message" class="status-message" role="status" aria-live="polite"></p>
         </section>
