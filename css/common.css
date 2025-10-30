@@ -404,7 +404,7 @@ th {
 .nonpulmonic .np-col-clicks,
 .nonpulmonic .np-col-implosives,
 .nonpulmonic .np-col-ejectives {
-  justify-items: center;
+  place-items: start center;
 }
 
 .nonpulmonic .np-item {
@@ -419,6 +419,7 @@ th {
   width: calc(100% - 8px);
   margin: 0 auto;
   box-sizing: border-box;
+  max-width: 100%;
 }
 
 .nonpulmonic .np-glyph-btn {

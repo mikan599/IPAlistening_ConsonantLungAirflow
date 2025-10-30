@@ -11,12 +11,11 @@
   const MIN_H_SP = 56;
   const isMobile = () => matchMedia('(max-width: 640px)').matches;
 
-  // すべてのセルを .np-item でラップし、ボタンとラベルを同じコンテナに収める
+  // すべてのセルを .np-item に正規化（ボタンと日本語名を同じラッパに）
   function normalizeDOM() {
     pageRoot.querySelectorAll(COLS_SEL).forEach(col => {
       col.querySelectorAll('.np-sound-cell').forEach(cell => {
-        const parent = cell.parentElement;
-        if (!(parent && parent.classList.contains('np-item'))) {
+        if (!(cell.parentElement && cell.parentElement.classList.contains('np-item'))) {
           const wrap = document.createElement('div');
           wrap.className = 'np-item';
           col.insertBefore(wrap, cell);
@@ -27,7 +26,7 @@
             wrap.appendChild(sibling);
           }
         } else {
-          const wrap = parent;
+          const wrap = cell.parentElement;
           const next = cell.nextElementSibling;
           if (next && next.classList && next.classList.contains('np-ja') && next.parentElement !== wrap) {
             wrap.appendChild(next);
@@ -37,24 +36,35 @@
     });
   }
 
+  // 列の内側幅（padding を除いた幅）を取得
+  function getColInnerWidth(col) {
+    const styles = getComputedStyle(col);
+    const padding = (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
+    return Math.max(0, Math.floor(col.clientWidth - padding));
+  }
+
   function fitOnce() {
     const items = pageRoot.querySelectorAll(ITEM_SEL);
     items.forEach(wrap => {
       const btn = wrap.querySelector(BTN_SEL);
       if (!btn) return;
 
-      const rect = wrap.getBoundingClientRect();
-      if (!rect.width) return;
+      // 幅は必ず列コンテナを基準に算出
+      const col = wrap.closest(COLS_SEL);
+      if (!col) return;
+      const colWidth = getColInnerWidth(col);
+      if (!colWidth) return;
 
-      const targetWidth = Math.max(44, Math.floor(rect.width - GAP));
-      const minH = isMobile() ? MIN_H_SP : MIN_H_PC;
+      const targetWidth = Math.max(44, colWidth - GAP);  // 列幅ほぼいっぱい
+      const minHeight = isMobile() ? MIN_H_SP : MIN_H_PC;
       const fontPx = Math.max(18, Math.min(Math.floor(targetWidth * 0.38), isMobile() ? 28 : 32));
 
       btn.style.display = 'block';
       btn.style.width = `${targetWidth}px`;
+      btn.style.maxWidth = `${targetWidth}px`;
       btn.style.marginLeft = 'auto';
       btn.style.marginRight = 'auto';
-      btn.style.minHeight = `${minH}px`;
+      btn.style.minHeight = `${minHeight}px`;
       btn.style.padding = isMobile() ? '8px 10px' : '10px 12px';
       btn.style.lineHeight = '1';
       btn.style.boxSizing = 'border-box';
@@ -86,8 +96,8 @@
       ro.observe(target);
     });
 
-    addEventListener('resize', fitOnce);
-    addEventListener('orientationchange', fitOnce);
+    addEventListener('resize', fitOnce, { passive: true });
+    addEventListener('orientationchange', fitOnce, { passive: true });
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         fitOnce();
