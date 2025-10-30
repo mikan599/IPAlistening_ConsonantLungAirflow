@@ -180,6 +180,9 @@ h1 {
 
   /* —— モバイル時のスクロール＋固定行列 —— */
   .pulmonic-scroll {
+    --scroll-pad-inline: 16px;
+    padding-inline: var(--scroll-pad-inline);
+    margin-inline: calc(-1 * var(--scroll-pad-inline));
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
@@ -207,25 +210,25 @@ h1 {
     top: calc(1.2em + 24px);
   }
 
-  .pulmonic-table tbody th:first-child,
-  .pulmonic-table tbody td:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 2;
-    background: linear-gradient(135deg, #26a69a, #2bbbad);
-    color: var(--text-main);
-    white-space: nowrap;
-  }
-
-  .pulmonic-table thead tr:first-child th:first-child {
-    left: 0;
-    z-index: 4;
+  .pulmonic-table thead th:first-child {
+    left: auto !important;
+    z-index: 3;
   }
 
   .pulmonic-table thead th,
   .pulmonic-table tbody th:first-child,
   .pulmonic-table tbody td:first-child {
     background-clip: padding-box;
+  }
+
+  .pulmonic-table tbody th:first-child,
+  .pulmonic-table tbody td:first-child {
+    position: sticky;
+    left: calc(-1 * var(--scroll-pad-inline));
+    z-index: 2;
+    background: linear-gradient(135deg, #26a69a, #2bbbad);
+    color: var(--text-main);
+    white-space: nowrap;
   }
 
   .pulmonic-scroll,
