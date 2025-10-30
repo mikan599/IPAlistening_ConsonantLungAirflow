@@ -1,6 +1,23 @@
-.pc-only {
-  display: block;
-}
-.mobile-only {
+.mobile-hint {
   display: none;
+}
+
+.control-panel {
+  align-items: center;
+}
+
+.control-buttons {
+  justify-content: center;
+}
+
+.action-button {
+  max-width: 280px;
+}
+
+.history-header {
+  flex-direction: row;
+}
+
+.history-header .action-button.subtle {
+  margin-left: auto;
 }
