@@ -5,141 +5,219 @@ const VOWEL_DATA_URL = "./src/data/vowels.json";
 const VIEWBOX_WIDTH = 140;
 const VIEWBOX_HEIGHT = 100;
 
-const CHART_LAYOUT = {
-  top: 10,
-  bottom: 90,
-  leftTop: 10,
-  leftBottom: 40,
-  rightTop: 130,
-  rightBottom: 130
+const TRAPEZOID = {
+  topLeft: { x: 10, y: 10 },
+  topRight: { x: 130, y: 10 },
+  bottomRight: { x: 130, y: 90 },
+  bottomLeft: { x: 40, y: 90 }
 };
 
-const BACKNESS_POSITIONS = {
-  front: 0,
-  "near-front": 0.25,
-  central: 0.5,
-  "near-back": 0.75,
-  back: 1
-};
+const TOP_MIDPOINT = midpoint(TRAPEZOID.topLeft, TRAPEZOID.topRight);
+const BOTTOM_MIDPOINT = midpoint(TRAPEZOID.bottomLeft, TRAPEZOID.bottomRight);
 
 const MAX_HEIGHT_LEVEL = 3;
-const HEIGHT_ANCHORS = [0, 1 / 3, 2 / 3, 1];
-const PAIRED_OFFSET = 0.055;
+const PAIRED_OFFSET = 5;
+const MIN_PAIR_GAP = 4;
 
 function clamp(value, min, max) {
   if (Number.isNaN(value)) return min;
   return Math.min(Math.max(value, min), max);
 }
 
-function normalizeHeight(height) {
-  const numeric = typeof height === "number" ? height : parseFloat(height ?? "0");
-  const clampedIndex = clamp(numeric, 0, MAX_HEIGHT_LEVEL);
-  const lowerIndex = Math.floor(clampedIndex);
-  const upperIndex = Math.ceil(clampedIndex);
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
 
-  if (lowerIndex === upperIndex) {
-    return HEIGHT_ANCHORS[lowerIndex];
+function midpoint(a, b) {
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+}
+
+function pointOnLine(start, end, t) {
+  return {
+    x: lerp(start.x, end.x, t),
+    y: lerp(start.y, end.y, t)
+  };
+}
+
+function parseHeightValue(height) {
+  if (typeof height === "number" && Number.isFinite(height)) {
+    return height;
   }
 
-  const lowerAnchor = HEIGHT_ANCHORS[lowerIndex];
-  const upperAnchor = HEIGHT_ANCHORS[upperIndex];
-  const ratio = clampedIndex - lowerIndex;
-  return lowerAnchor + (upperAnchor - lowerAnchor) * ratio;
+  const parsed = parseFloat(height ?? "0");
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function getRowContext(heightValue) {
+  const clampedHeight = clamp(heightValue, 0, MAX_HEIGHT_LEVEL);
+  const ratio = clampedHeight / MAX_HEIGHT_LEVEL;
+
+  const leftEdgePoint = pointOnLine(TRAPEZOID.topLeft, TRAPEZOID.bottomLeft, ratio);
+  const rightEdgePoint = pointOnLine(TRAPEZOID.topRight, TRAPEZOID.bottomRight, ratio);
+  const centerPoint = pointOnLine(TOP_MIDPOINT, BOTTOM_MIDPOINT, ratio);
+
+  return {
+    height: clampedHeight,
+    ratio,
+    leftEdgePoint,
+    rightEdgePoint,
+    centerPoint,
+    leftMidPoint: midpoint(leftEdgePoint, centerPoint),
+    rightMidPoint: midpoint(centerPoint, rightEdgePoint)
+  };
+}
+
+function getAnchorForBackness(rowContext, backness) {
+  switch (backness) {
+    case "front":
+      return rowContext.leftEdgePoint;
+    case "near-front":
+      return rowContext.leftMidPoint;
+    case "central":
+      return rowContext.centerPoint;
+    case "near-back":
+      return rowContext.rightMidPoint;
+    case "back":
+      return rowContext.rightEdgePoint;
+    default:
+      console.warn(`Unknown backness "${backness}"`);
+      return rowContext.centerPoint;
+  }
+}
+
+function clampToRow(x, rowContext) {
+  return clamp(x, rowContext.leftEdgePoint.x, rowContext.rightEdgePoint.x);
+}
+
+function computePairPositions(anchorX, rowContext) {
+  const leftBound = rowContext.leftEdgePoint.x;
+  const rightBound = rowContext.rightEdgePoint.x;
+  const desiredGap = PAIRED_OFFSET * 2;
+
+  const leftSpace = Math.max(anchorX - leftBound, 0);
+  const rightSpace = Math.max(rightBound - anchorX, 0);
+
+  let unroundedX;
+  let roundedX;
+
+  if (leftSpace >= PAIRED_OFFSET && rightSpace >= PAIRED_OFFSET) {
+    unroundedX = anchorX - PAIRED_OFFSET;
+    roundedX = anchorX + PAIRED_OFFSET;
+  } else {
+    const totalSpace = leftSpace + rightSpace;
+    if (totalSpace <= 0) {
+      return { unrounded: anchorX, rounded: anchorX };
+    }
+
+    const gap = Math.min(desiredGap, totalSpace);
+    const leftShare = totalSpace === 0 ? 0 : leftSpace / totalSpace;
+    const rightShare = totalSpace === 0 ? 0 : rightSpace / totalSpace;
+
+    unroundedX = anchorX - gap * leftShare;
+    roundedX = anchorX + gap * rightShare;
+  }
+
+  unroundedX = clamp(unroundedX, leftBound, anchorX);
+  roundedX = clamp(roundedX, anchorX, rightBound);
+
+  if (roundedX - unroundedX < MIN_PAIR_GAP) {
+    const mid = anchorX;
+    const halfGap = MIN_PAIR_GAP / 2;
+    const candidateLeft = clamp(mid - halfGap, leftBound, mid);
+    const candidateRight = clamp(mid + halfGap, mid, rightBound);
+
+    if (candidateRight - candidateLeft >= MIN_PAIR_GAP) {
+      unroundedX = candidateLeft;
+      roundedX = candidateRight;
+    }
+  }
+
+  return { unrounded: unroundedX, rounded: roundedX };
 }
 
 function computeVowelLayout(data) {
   const groups = new Map();
-  const order = new Map();
 
-  data.forEach((item, index) => {
-    order.set(item.soundId, index);
+  data.forEach((item) => {
 
     const backnessKey = item.backness;
-    const baseX = BACKNESS_POSITIONS[backnessKey];
-    const heightIndex =
-      typeof item.height === "number" ? item.height : parseFloat(item.height ?? "0");
-    const normalizedHeight = normalizeHeight(heightIndex);
-
-    if (typeof baseX !== "number") {
-      console.warn(`Unknown backness "${backnessKey}" for`, item);
-      return;
-    }
-
-    if (!Number.isFinite(heightIndex)) {
+    const heightValue = parseHeightValue(item.height);
+    if (!Number.isFinite(heightValue)) {
       console.warn(`Invalid height for`, item);
       return;
     }
 
-    const groupKey = `${heightIndex}|${backnessKey}`;
-    if (!groups.has(groupKey)) {
-      groups.set(groupKey, { baseX, normalizedHeight, items: [] });
+    const rowContext = getRowContext(heightValue);
+    const anchorPoint = getAnchorForBackness(rowContext, backnessKey);
+
+    if (!anchorPoint) {
+      console.warn(`Failed to resolve anchor for`, item);
+      return;
     }
-    groups.get(groupKey).items.push({ item, normalizedHeight });
+
+    const groupKey = `${rowContext.height}|${backnessKey}`;
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, { anchorPoint, rowContext, items: [] });
+    }
+    groups.get(groupKey).items.push({ item });
   });
 
-  const positioned = [];
+  const positionedMap = new Map();
 
-  groups.forEach(({ baseX, items }) => {
-    const sortedItems = [...items].sort((a, b) => {
-      if (a.item.rounded === b.item.rounded) return 0;
-      return a.item.rounded ? 1 : -1;
-    });
+  groups.forEach(({ anchorPoint, rowContext, items }) => {
+    const unroundedEntry = items.find(({ item }) => item.rounded === false);
+    const roundedEntry = items.find(({ item }) => item.rounded === true);
 
-    const offsets = [];
-    if (sortedItems.length === 1) {
-      offsets.push(0);
-    } else if (sortedItems.length === 2) {
-      const hasRounded = sortedItems.some(({ item }) => item.rounded === true);
-      const hasUnrounded = sortedItems.some(({ item }) => item.rounded === false);
-      if (hasRounded && hasUnrounded) {
-        sortedItems.forEach(({ item }) => {
-          offsets.push(item.rounded ? PAIRED_OFFSET : -PAIRED_OFFSET);
-        });
-      } else {
-        const spread = 0.05;
-        sortedItems.forEach((_, index) => {
-          offsets.push((index - (sortedItems.length - 1) / 2) * spread);
-        });
-      }
-    } else {
-      const spread = 0.05;
-      sortedItems.forEach((_, index) => {
-        offsets.push((index - (sortedItems.length - 1) / 2) * spread);
+    if (unroundedEntry && roundedEntry) {
+      const pairPositions = computePairPositions(anchorPoint.x, rowContext);
+      positionedMap.set(unroundedEntry.item.soundId, {
+        ...unroundedEntry.item,
+        x: pairPositions.unrounded,
+        y: anchorPoint.y
+      });
+      positionedMap.set(roundedEntry.item.soundId, {
+        ...roundedEntry.item,
+        x: pairPositions.rounded,
+        y: anchorPoint.y
       });
     }
 
-    sortedItems.forEach(({ item, normalizedHeight }, index) => {
-      const x = clamp(baseX + offsets[index], 0, 1);
-      positioned.push({ ...item, x, y: normalizedHeight });
-    });
+    const remaining = items.filter(({ item }) => !positionedMap.has(item.soundId));
+    if (remaining.length > 0) {
+      const spread = remaining.length > 1 ? 5 : 0;
+      const baseX = anchorPoint.x;
+      const baseY = anchorPoint.y;
+      const start = -(remaining.length - 1) / 2;
+
+      remaining.forEach(({ item }, index) => {
+        const offset = spread * (start + index);
+        const x = clampToRow(baseX + offset, rowContext);
+        positionedMap.set(item.soundId, { ...item, x, y: baseY });
+      });
+    }
   });
 
-  positioned.sort((a, b) => {
-    const orderA = order.get(a.soundId) ?? 0;
-    const orderB = order.get(b.soundId) ?? 0;
-    return orderA - orderB;
+  const positioned = [];
+  data.forEach((item) => {
+    const placement = positionedMap.get(item.soundId);
+    if (!placement) {
+      console.warn("Missing placement for", item);
+      return;
+    }
+
+    positioned.push(placement);
   });
 
   return positioned;
 }
 
 function mapToChartCoordinates(x, y) {
-  const clampedX = Math.min(Math.max(x ?? 0, 0), 1);
-  const clampedY = Math.min(Math.max(y ?? 0, 0), 1);
-
-  const verticalSpan = CHART_LAYOUT.bottom - CHART_LAYOUT.top;
-  const absoluteTop = CHART_LAYOUT.top + clampedY * verticalSpan;
-
-  const leftEdge =
-    CHART_LAYOUT.leftTop + (CHART_LAYOUT.leftBottom - CHART_LAYOUT.leftTop) * clampedY;
-  const rightEdge =
-    CHART_LAYOUT.rightTop + (CHART_LAYOUT.rightBottom - CHART_LAYOUT.rightTop) * clampedY;
-  const horizontalSpan = rightEdge - leftEdge;
-  const absoluteLeft = leftEdge + clampedX * horizontalSpan;
+  const clampedX = clamp(x ?? 0, 0, VIEWBOX_WIDTH);
+  const clampedY = clamp(y ?? 0, 0, VIEWBOX_HEIGHT);
 
   return {
-    left: (absoluteLeft / VIEWBOX_WIDTH) * 100,
-    top: (absoluteTop / VIEWBOX_HEIGHT) * 100
+    left: (clampedX / VIEWBOX_WIDTH) * 100,
+    top: (clampedY / VIEWBOX_HEIGHT) * 100
   };
 }
 
