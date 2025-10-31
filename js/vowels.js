@@ -11,6 +11,115 @@ const CHART_LAYOUT = {
   rightBottom: 74
 };
 
+const BACKNESS_POSITIONS = {
+  front: 0.1,
+  "near-front": 0.22,
+  central: 0.5,
+  "near-back": 0.78,
+  back: 0.92
+};
+
+const MAX_HEIGHT_LEVEL = 3;
+const HEIGHT_ANCHORS = [0.08, 0.35, 0.55, 0.9];
+const PAIRED_OFFSET = 0.055;
+
+function clamp(value, min, max) {
+  if (Number.isNaN(value)) return min;
+  return Math.min(Math.max(value, min), max);
+}
+
+function normalizeHeight(height) {
+  const numeric = typeof height === "number" ? height : parseFloat(height ?? "0");
+  const clampedIndex = clamp(numeric, 0, MAX_HEIGHT_LEVEL);
+  const lowerIndex = Math.floor(clampedIndex);
+  const upperIndex = Math.ceil(clampedIndex);
+
+  if (lowerIndex === upperIndex) {
+    return HEIGHT_ANCHORS[lowerIndex];
+  }
+
+  const lowerAnchor = HEIGHT_ANCHORS[lowerIndex];
+  const upperAnchor = HEIGHT_ANCHORS[upperIndex];
+  const ratio = clampedIndex - lowerIndex;
+  return lowerAnchor + (upperAnchor - lowerAnchor) * ratio;
+}
+
+function computeVowelLayout(data) {
+  const groups = new Map();
+  const order = new Map();
+
+  data.forEach((item, index) => {
+    order.set(item.soundId, index);
+
+    const backnessKey = item.backness;
+    const baseX = BACKNESS_POSITIONS[backnessKey];
+    const heightIndex =
+      typeof item.height === "number" ? item.height : parseFloat(item.height ?? "0");
+    const normalizedHeight = normalizeHeight(heightIndex);
+
+    if (typeof baseX !== "number") {
+      console.warn(`Unknown backness "${backnessKey}" for`, item);
+      return;
+    }
+
+    if (!Number.isFinite(heightIndex)) {
+      console.warn(`Invalid height for`, item);
+      return;
+    }
+
+    const groupKey = `${heightIndex}|${backnessKey}`;
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, { baseX, normalizedHeight, items: [] });
+    }
+    groups.get(groupKey).items.push({ item, normalizedHeight });
+  });
+
+  const positioned = [];
+
+  groups.forEach(({ baseX, items }) => {
+    const sortedItems = [...items].sort((a, b) => {
+      if (a.item.rounded === b.item.rounded) return 0;
+      return a.item.rounded ? 1 : -1;
+    });
+
+    const offsets = [];
+    if (sortedItems.length === 1) {
+      offsets.push(0);
+    } else if (sortedItems.length === 2) {
+      const hasRounded = sortedItems.some(({ item }) => item.rounded === true);
+      const hasUnrounded = sortedItems.some(({ item }) => item.rounded === false);
+      if (hasRounded && hasUnrounded) {
+        sortedItems.forEach(({ item }) => {
+          offsets.push(item.rounded ? PAIRED_OFFSET : -PAIRED_OFFSET);
+        });
+      } else {
+        const spread = 0.05;
+        sortedItems.forEach((_, index) => {
+          offsets.push((index - (sortedItems.length - 1) / 2) * spread);
+        });
+      }
+    } else {
+      const spread = 0.05;
+      sortedItems.forEach((_, index) => {
+        offsets.push((index - (sortedItems.length - 1) / 2) * spread);
+      });
+    }
+
+    sortedItems.forEach(({ item, normalizedHeight }, index) => {
+      const x = clamp(baseX + offsets[index], 0, 1);
+      positioned.push({ ...item, x, y: normalizedHeight });
+    });
+  });
+
+  positioned.sort((a, b) => {
+    const orderA = order.get(a.soundId) ?? 0;
+    const orderB = order.get(b.soundId) ?? 0;
+    return orderA - orderB;
+  });
+
+  return positioned;
+}
+
 function mapToChartCoordinates(x, y) {
   const clampedX = Math.min(Math.max(x ?? 0, 0), 1);
   const clampedY = Math.min(Math.max(y ?? 0, 0), 1);
@@ -78,11 +187,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const data = await response.json();
+      const positionedItems = computeVowelLayout(data);
       chart.querySelectorAll(".vowel-cell").forEach((cell) => cell.remove());
       vowelPool = [];
       Object.keys(soundMap).forEach((key) => delete soundMap[key]);
 
-      data.forEach((item) => {
+      positionedItems.forEach((item) => {
         if (!item || !item.soundId) return;
         vowelPool.push(item.soundId);
         soundMap[item.soundId] = item.ipa;
