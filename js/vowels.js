@@ -2,6 +2,32 @@ import { QuizGame } from "./quizShared.js";
 
 const VOWEL_DATA_URL = "./src/data/vowels.json";
 
+const CHART_LAYOUT = {
+  top: 4,
+  bottom: 96,
+  leftTop: 8,
+  leftBottom: 24,
+  rightTop: 92,
+  rightBottom: 74
+};
+
+function mapToChartCoordinates(x, y) {
+  const clampedX = Math.min(Math.max(x ?? 0, 0), 1);
+  const clampedY = Math.min(Math.max(y ?? 0, 0), 1);
+
+  const verticalSpan = CHART_LAYOUT.bottom - CHART_LAYOUT.top;
+  const top = CHART_LAYOUT.top + clampedY * verticalSpan;
+
+  const leftEdge =
+    CHART_LAYOUT.leftTop + (CHART_LAYOUT.leftBottom - CHART_LAYOUT.leftTop) * clampedY;
+  const rightEdge =
+    CHART_LAYOUT.rightTop + (CHART_LAYOUT.rightBottom - CHART_LAYOUT.rightTop) * clampedY;
+  const horizontalSpan = rightEdge - leftEdge;
+  const left = leftEdge + clampedX * horizontalSpan;
+
+  return { left, top };
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const audioPlayer = document.getElementById("audioPlayer");
   const message = document.getElementById("message");
@@ -70,8 +96,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (typeof item.rounded === "boolean") {
           button.dataset.rounded = item.rounded ? "true" : "false";
         }
-        button.style.setProperty("--x", `${item.x ?? 0}`);
-        button.style.setProperty("--y", `${item.y ?? 0}`);
+        const { left, top } = mapToChartCoordinates(item.x, item.y);
+        button.style.setProperty("--left", `${left}%`);
+        button.style.setProperty("--top", `${top}%`);
         const labelDetail = item.name ? `（${item.name}）` : "";
         button.setAttribute("aria-label", `${item.ipa}${labelDetail}`);
         button.textContent = item.ipa;
