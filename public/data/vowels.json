@@ -1,0 +1,38 @@
+{
+  "i":  { "x": 6,  "y": 10, "rounded": false },
+  "y":  { "x": 12, "y": 10, "rounded": true  },
+
+  "ɨ": { "x": 40, "y": 12, "rounded": false },
+  "ʉ": { "x": 60, "y": 12, "rounded": true  },
+
+  "ɯ": { "x": 78, "y": 10, "rounded": false },
+  "u":  { "x": 94, "y": 10, "rounded": true  },
+
+  "ɪ": { "x": 10, "y": 18, "rounded": false },
+  "ʏ": { "x": 18, "y": 18, "rounded": true  },
+  "ʊ": { "x": 88, "y": 18, "rounded": true  },
+
+  "e":  { "x": 16, "y": 26, "rounded": false },
+  "ø":  { "x": 24, "y": 26, "rounded": true  },
+  "ɘ": { "x": 45, "y": 28, "rounded": false },
+  "ɵ": { "x": 55, "y": 28, "rounded": true  },
+  "ɤ": { "x": 72, "y": 26, "rounded": false },
+  "o":  { "x": 90, "y": 26, "rounded": true  },
+
+  "ə":  { "x": 50, "y": 36, "rounded": false },
+
+  "ɛ": { "x": 22, "y": 48, "rounded": false },
+  "œ": { "x": 30, "y": 48, "rounded": true  },
+  "ɜ": { "x": 45, "y": 48, "rounded": false },
+  "ɞ": { "x": 55, "y": 48, "rounded": true  },
+  "ʌ": { "x": 70, "y": 48, "rounded": false },
+  "ɔ": { "x": 88, "y": 48, "rounded": true  },
+
+  "æ": { "x": 20, "y": 58, "rounded": false },
+  "ɐ": { "x": 50, "y": 60, "rounded": false },
+
+  "a":  { "x": 18, "y": 70, "rounded": false },
+  "ɶ": { "x": 30, "y": 70, "rounded": true  },
+  "ɑ": { "x": 72, "y": 70, "rounded": false },
+  "ɒ": { "x": 90, "y": 70, "rounded": true  }
+}
