@@ -2,13 +2,16 @@ import { QuizGame } from "./quizShared.js";
 
 const VOWEL_DATA_URL = "./src/data/vowels.json";
 
+const VIEWBOX_WIDTH = 140;
+const VIEWBOX_HEIGHT = 100;
+
 const CHART_LAYOUT = {
   top: 10,
   bottom: 90,
-  leftTop: 25,
+  leftTop: 10,
   leftBottom: 40,
-  rightTop: 85,
-  rightBottom: 85
+  rightTop: 130,
+  rightBottom: 130
 };
 
 const BACKNESS_POSITIONS = {
@@ -125,16 +128,19 @@ function mapToChartCoordinates(x, y) {
   const clampedY = Math.min(Math.max(y ?? 0, 0), 1);
 
   const verticalSpan = CHART_LAYOUT.bottom - CHART_LAYOUT.top;
-  const top = CHART_LAYOUT.top + clampedY * verticalSpan;
+  const absoluteTop = CHART_LAYOUT.top + clampedY * verticalSpan;
 
   const leftEdge =
     CHART_LAYOUT.leftTop + (CHART_LAYOUT.leftBottom - CHART_LAYOUT.leftTop) * clampedY;
   const rightEdge =
     CHART_LAYOUT.rightTop + (CHART_LAYOUT.rightBottom - CHART_LAYOUT.rightTop) * clampedY;
   const horizontalSpan = rightEdge - leftEdge;
-  const left = leftEdge + clampedX * horizontalSpan;
+  const absoluteLeft = leftEdge + clampedX * horizontalSpan;
 
-  return { left, top };
+  return {
+    left: (absoluteLeft / VIEWBOX_WIDTH) * 100,
+    top: (absoluteTop / VIEWBOX_HEIGHT) * 100
+  };
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
