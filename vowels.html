@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPA母音 リスニング</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/pc.css" media="screen and (min-width: 769px)" />
+    <link rel="stylesheet" href="css/mobile.css" media="screen and (max-width: 768px)" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7DPSFMZ4Z"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-R7DPSFMZ4Z');
+    </script>
+</head>
+<body class="vowels">
+    <main class="page">
+        <header class="page-header">
+            <h1>IPA母音 リスニング</h1>
+            <p class="page-description">IPA母音表を眺めながら音声を聞き、正しい記号を選んでみましょう。ホバーで位置を確認し、クリックすると音声が再生されます。</p>
+            <nav class="page-nav" aria-label="ページ切り替え">
+                <a class="page-nav__link" href="index.html">肺気流子音</a>
+                <a class="page-nav__link" href="nonpulmonic.html">非肺気流子音</a>
+                <a class="page-nav__link page-nav__link--active" href="vowels.html">母音</a>
+            </nav>
+        </header>
+
+        <section class="control-panel" aria-label="再生コントロール">
+            <div class="volume-control">
+                <label for="volumeSlider">🔊 音量</label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            </div>
+            <div class="control-buttons">
+                <div class="quiz-controls">
+                    <button class="action-button primary quiz-btn" onclick="playRandomSound()">
+                        <span class="emoji" aria-hidden="true">🎧</span>
+                        <span class="label">ランダム再生</span>
+                    </button>
+                    <button class="action-button quiz-btn" onclick="replaySound()">
+                        <span class="emoji" aria-hidden="true">🔁</span>
+                        <span class="label">もう一度聞く</span>
+                    </button>
+                    <button class="action-button warning quiz-btn" onclick="playWrongSound()">
+                        <span class="emoji" aria-hidden="true">⚠️</span>
+                        <span class="label">間違いから出題</span>
+                    </button>
+                </div>
+            </div>
+            <p id="message" class="status-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="vowel-section" aria-label="IPA母音表">
+            <div class="section-header">
+                <h2 class="section-title">IPA母音表</h2>
+                <p class="mobile-hint">セルをタップすると音声が再生されます。</p>
+            </div>
+            <div class="vowel-chart" id="vowelChart" aria-labelledby="vowelLegend">
+                <svg class="vowel-chart__grid" viewBox="0 0 100 100" role="presentation" aria-hidden="true">
+                    <path d="M10 6 H90 L70 94 H26 Z" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linejoin="round" />
+                    <path d="M10 26 H83" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+                    <path d="M10 46 H76" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" />
+                    <path d="M10 66 H69" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" />
+                    <path d="M10 86 H62" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" />
+                </svg>
+                <div class="vowel-chart__legend" id="vowelLegend" aria-hidden="true">
+                    <span>前舌</span>
+                    <span>中舌</span>
+                    <span>後舌</span>
+                </div>
+                <!-- 母音セルは JS で追加 -->
+            </div>
+        </section>
+
+        <section class="history-section" aria-label="間違い履歴">
+            <div class="history-header">
+                <h2>❌ 間違い履歴</h2>
+                <button class="action-button subtle" onclick="clearHistory()">🗑️ 履歴クリア</button>
+            </div>
+            <div class="history-table-wrapper">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>記号</th>
+                            <th>日本語名</th>
+                            <th>間違えた回数</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <p>
+                ※本サイトのIPA音声は、東京外国語大学 言語モジュール
+                （<a href="https://www.coelang.tufs.ac.jp/ipa/vowel.php" target="_blank" rel="noopener noreferrer">
+                    https://www.coelang.tufs.ac.jp/ipa/vowel.php
+                </a>）に掲載されている音声ファイルを使用しています。<br>
+                音声の著作権は東京外国語大学に帰属します。© Tokyo University of Foreign Studies.
+            </p>
+        </footer>
+    </main>
+
+    <audio id="audioPlayer"></audio>
+
+    <script type="module" src="js/vowels.js"></script>
+</body>
+</html>
