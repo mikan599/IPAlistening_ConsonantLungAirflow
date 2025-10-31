@@ -1,3 +1,14 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+
+[[redirects]]
+  from = "/vowels"
+  to = "/src/vowels/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/vowels/"
+  to = "/src/vowels/index.html"
+  status = 200

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja" class="vowels-page">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IPA母音 リスニング</title>
+
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/pc.css" media="screen and (min-width: 769px)" />
+  <link rel="stylesheet" href="/css/mobile.css" media="screen and (max-width: 768px)" />
+  <link rel="stylesheet" href="/src/vowels/vowels.css" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7DPSFMZ4Z"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-R7DPSFMZ4Z');
+  </script>
+</head>
+
+<body class="vowels-page">
+  <main class="page">
+    <header class="page-header">
+      <h1>IPA母音 リスニング</h1>
+      <p class="page-description">母音図をタップして音を確認しながら、クイズで母音記号を覚えましょう。</p>
+      <nav class="page-nav" aria-label="ページ切り替え">
+        <a class="page-nav__link" href="/index.html">肺気流子音</a>
+        <a class="page-nav__link" href="/nonpulmonic.html">非肺気流子音</a>
+        <a class="page-nav__link page-nav__link--active" href="/vowels">母音</a>
+      </nav>
+    </header>
+
+    <section class="control-panel" aria-label="再生コントロール">
+      <div class="volume-control">
+        <label for="volumeSlider">🔊 音量</label>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+      </div>
+      <div class="quiz-controls">
+        <button type="button" class="action-button primary quiz-btn btn-random">
+          <span class="emoji" aria-hidden="true">🎲</span>
+          <span class="label">ランダム再生</span>
+        </button>
+        <button type="button" class="action-button quiz-btn btn-replay">
+          <span class="emoji" aria-hidden="true">🔁</span>
+          <span class="label">もう一度聞く</span>
+        </button>
+        <button type="button" class="action-button warning quiz-btn btn-mistake">
+          <span class="emoji" aria-hidden="true">📝</span>
+          <span class="label">間違いから出題</span>
+        </button>
+      </div>
+      <p class="status-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="vowel-section" aria-label="IPA母音図">
+      <h2 class="section-title">IPA母音図</h2>
+      <p class="mobile-hint">記号をタップすると音声が再生されます。</p>
+      <div class="vowel-chart">
+        <svg class="vowel-svg" viewBox="0 0 100 80" role="img" aria-labelledby="vowelChartTitle vowelChartDesc" preserveAspectRatio="xMidYMid meet">
+          <title id="vowelChartTitle">IPA Vowel Chart</title>
+          <desc id="vowelChartDesc">Tap vowels to play their pronunciation. Rounded vowels are positioned to the right of their pair.</desc>
+          <polygon class="vowel-trapezoid" points="6,6 94,6 80,74 20,74"></polygon>
+          <g class="vowel-nodes"></g>
+        </svg>
+        <div class="vowel-list" aria-label="母音一覧（代替）"></div>
+      </div>
+    </section>
+
+    <section class="vowel-section quiz-area" aria-label="母音クイズ">
+      <div class="question">🔊 再生された母音はどれ？</div>
+      <div class="choices"></div>
+      <div class="feedback" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="mistakes" aria-label="間違いリスト">
+      <div class="history-header">
+        <h2>❌ 間違いリスト</h2>
+      </div>
+      <ul class="mistake-list"></ul>
+    </section>
+
+    <footer class="site-footer">
+      <p>
+        ※本サイトのIPA音声は、東京外国語大学 言語モジュール
+        （<a href="https://www.coelang.tufs.ac.jp/ipa/vowel.php" target="_blank" rel="noopener noreferrer">
+          https://www.coelang.tufs.ac.jp/ipa/vowel.php
+        </a>）に掲載されている音声ファイルを使用しています。<br />
+        音声の著作権は東京外国語大学に帰属します。© Tokyo University of Foreign Studies.
+      </p>
+    </footer>
+  </main>
+
+  <script type="module" src="/src/vowels/vowels.js"></script>
+</body>
+
+</html>
