@@ -3,24 +3,24 @@ import { QuizGame } from "./quizShared.js";
 const VOWEL_DATA_URL = "./src/data/vowels.json";
 
 const CHART_LAYOUT = {
-  top: 2,
-  bottom: 98,
-  leftTop: 4,
-  leftBottom: 20,
-  rightTop: 96,
-  rightBottom: 78
+  top: 10,
+  bottom: 90,
+  leftTop: 25,
+  leftBottom: 40,
+  rightTop: 85,
+  rightBottom: 85
 };
 
 const BACKNESS_POSITIONS = {
-  front: 0.1,
-  "near-front": 0.22,
+  front: 0,
+  "near-front": 0.25,
   central: 0.5,
-  "near-back": 0.78,
-  back: 0.92
+  "near-back": 0.75,
+  back: 1
 };
 
 const MAX_HEIGHT_LEVEL = 3;
-const HEIGHT_ANCHORS = [0.08, 0.35, 0.55, 0.9];
+const HEIGHT_ANCHORS = [0, 1 / 3, 2 / 3, 1];
 const PAIRED_OFFSET = 0.055;
 
 function clamp(value, min, max) {
