@@ -3,12 +3,12 @@ import { QuizGame } from "./quizShared.js";
 const VOWEL_DATA_URL = "./src/data/vowels.json";
 
 const CHART_LAYOUT = {
-  top: 4,
-  bottom: 96,
-  leftTop: 8,
-  leftBottom: 24,
-  rightTop: 92,
-  rightBottom: 74
+  top: 2,
+  bottom: 98,
+  leftTop: 4,
+  leftBottom: 20,
+  rightTop: 96,
+  rightBottom: 78
 };
 
 const BACKNESS_POSITIONS = {
