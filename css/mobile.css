@@ -120,6 +120,26 @@ h1 {
   padding-top: 16px;
 }
 
+.vowel-chart {
+  min-height: 320px;
+  padding: 12px 16px;
+}
+
+.vowel-chart__legend {
+  top: 8px;
+  gap: 16px;
+  font-size: 0.78rem;
+}
+
+.vowel-cell {
+  width: clamp(40px, 14vw, 52px);
+  height: clamp(40px, 14vw, 52px);
+}
+
+.vowel-cell[data-name]::after {
+  display: none;
+}
+
 @media (max-width: 640px) {
   .quiz-controls {
     display: flex;
