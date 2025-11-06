@@ -16,8 +16,17 @@ const TOP_MIDPOINT = midpoint(TRAPEZOID.topLeft, TRAPEZOID.topRight);
 const BOTTOM_MIDPOINT = midpoint(TRAPEZOID.bottomLeft, TRAPEZOID.bottomRight);
 
 const MAX_HEIGHT_LEVEL = 3;
-const PAIRED_OFFSET = 5;
-const MIN_PAIR_GAP = 4;
+
+function getLayoutSpacing() {
+  const isMobile =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(max-width: 768px)")?.matches;
+
+  return {
+    pairedOffset: isMobile ? 6 : 5,
+    minPairGap: isMobile ? 5 : 4
+  };
+}
 
 function clamp(value, min, max) {
   if (Number.isNaN(value)) return min;
@@ -89,10 +98,12 @@ function clampToRow(x, rowContext) {
   return clamp(x, rowContext.leftEdgePoint.x, rowContext.rightEdgePoint.x);
 }
 
-function computePairPositions(anchorX, rowContext) {
+function computePairPositions(anchorX, rowContext, spacing = getLayoutSpacing()) {
+  const pairedOffset = spacing?.pairedOffset ?? 5;
+  const minPairGap = spacing?.minPairGap ?? 4;
   const leftBound = rowContext.leftEdgePoint.x;
   const rightBound = rowContext.rightEdgePoint.x;
-  const desiredGap = PAIRED_OFFSET * 2;
+  const desiredGap = pairedOffset * 2;
 
   const leftSpace = Math.max(anchorX - leftBound, 0);
   const rightSpace = Math.max(rightBound - anchorX, 0);
@@ -100,9 +111,9 @@ function computePairPositions(anchorX, rowContext) {
   let unroundedX;
   let roundedX;
 
-  if (leftSpace >= PAIRED_OFFSET && rightSpace >= PAIRED_OFFSET) {
-    unroundedX = anchorX - PAIRED_OFFSET;
-    roundedX = anchorX + PAIRED_OFFSET;
+  if (leftSpace >= pairedOffset && rightSpace >= pairedOffset) {
+    unroundedX = anchorX - pairedOffset;
+    roundedX = anchorX + pairedOffset;
   } else {
     const totalSpace = leftSpace + rightSpace;
     if (totalSpace <= 0) {
@@ -120,13 +131,13 @@ function computePairPositions(anchorX, rowContext) {
   unroundedX = clamp(unroundedX, leftBound, anchorX);
   roundedX = clamp(roundedX, anchorX, rightBound);
 
-  if (roundedX - unroundedX < MIN_PAIR_GAP) {
+  if (roundedX - unroundedX < minPairGap) {
     const mid = anchorX;
-    const halfGap = MIN_PAIR_GAP / 2;
+    const halfGap = minPairGap / 2;
     const candidateLeft = clamp(mid - halfGap, leftBound, mid);
     const candidateRight = clamp(mid + halfGap, mid, rightBound);
 
-    if (candidateRight - candidateLeft >= MIN_PAIR_GAP) {
+    if (candidateRight - candidateLeft >= minPairGap) {
       unroundedX = candidateLeft;
       roundedX = candidateRight;
     }
@@ -135,7 +146,7 @@ function computePairPositions(anchorX, rowContext) {
   return { unrounded: unroundedX, rounded: roundedX };
 }
 
-function computeVowelLayout(data) {
+function computeVowelLayout(data, spacing = getLayoutSpacing()) {
   const groups = new Map();
 
   data.forEach((item) => {
@@ -169,7 +180,7 @@ function computeVowelLayout(data) {
     const roundedEntry = items.find(({ item }) => item.rounded === true);
 
     if (unroundedEntry && roundedEntry) {
-      const pairPositions = computePairPositions(anchorPoint.x, rowContext);
+      const pairPositions = computePairPositions(anchorPoint.x, rowContext, spacing);
       positionedMap.set(unroundedEntry.item.soundId, {
         ...unroundedEntry.item,
         x: pairPositions.unrounded,
