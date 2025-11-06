@@ -150,7 +150,6 @@ function computeVowelLayout(data, spacing = getLayoutSpacing()) {
   const groups = new Map();
 
   data.forEach((item) => {
-
     const backnessKey = item.backness;
     const heightValue = parseHeightValue(item.height);
     if (!Number.isFinite(heightValue)) {
@@ -170,56 +169,61 @@ function computeVowelLayout(data, spacing = getLayoutSpacing()) {
     if (!groups.has(groupKey)) {
       groups.set(groupKey, { anchorPoint, rowContext, items: [] });
     }
-    groups.get(groupKey).items.push({ item });
+    groups.get(groupKey).items.push(item);
   });
 
-  const positionedMap = new Map();
+  const cells = [];
 
-  groups.forEach(({ anchorPoint, rowContext, items }) => {
-    const unroundedEntry = items.find(({ item }) => item.rounded === false);
-    const roundedEntry = items.find(({ item }) => item.rounded === true);
+  groups.forEach(({ anchorPoint, rowContext, items }, key) => {
+    const placements = [];
+    const used = new Set();
 
-    if (unroundedEntry && roundedEntry) {
+    const unroundedItem = items.find((item) => item.rounded === false);
+    const roundedItem = items.find((item) => item.rounded === true);
+
+    if (unroundedItem && roundedItem) {
       const pairPositions = computePairPositions(anchorPoint.x, rowContext, spacing);
-      positionedMap.set(unroundedEntry.item.soundId, {
-        ...unroundedEntry.item,
-        x: pairPositions.unrounded,
-        y: anchorPoint.y
-      });
-      positionedMap.set(roundedEntry.item.soundId, {
-        ...roundedEntry.item,
-        x: pairPositions.rounded,
-        y: anchorPoint.y
-      });
+      placements.push({ item: unroundedItem, x: pairPositions.unrounded, y: anchorPoint.y });
+      placements.push({ item: roundedItem, x: pairPositions.rounded, y: anchorPoint.y });
+      used.add(unroundedItem.soundId);
+      used.add(roundedItem.soundId);
     }
 
-    const remaining = items.filter(({ item }) => !positionedMap.has(item.soundId));
+    const remaining = items.filter((item) => !used.has(item.soundId));
     if (remaining.length > 0) {
       const spread = remaining.length > 1 ? 5 : 0;
       const baseX = anchorPoint.x;
       const baseY = anchorPoint.y;
       const start = -(remaining.length - 1) / 2;
 
-      remaining.forEach(({ item }, index) => {
+      remaining.forEach((item, index) => {
         const offset = spread * (start + index);
         const x = clampToRow(baseX + offset, rowContext);
-        positionedMap.set(item.soundId, { ...item, x, y: baseY });
+        placements.push({ item, x, y: baseY });
       });
     }
+
+    const anchorPosition = mapToChartCoordinates(anchorPoint.x, anchorPoint.y);
+    const cellItems = placements.map(({ item, x, y }) => {
+      const position = mapToChartCoordinates(x, y);
+      return {
+        data: item,
+        position,
+        offset: {
+          x: position.left - anchorPosition.left,
+          y: position.top - anchorPosition.top
+        }
+      };
+    });
+
+    cells.push({
+      key,
+      anchor: anchorPosition,
+      items: cellItems
+    });
   });
 
-  const positioned = [];
-  data.forEach((item) => {
-    const placement = positionedMap.get(item.soundId);
-    if (!placement) {
-      console.warn("Missing placement for", item);
-      return;
-    }
-
-    positioned.push(placement);
-  });
-
-  return positioned;
+  return cells;
 }
 
 function mapToChartCoordinates(x, y) {
@@ -241,7 +245,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const quiz = new QuizGame({
     audioPlayer,
     messageElement: message,
-    clickableSelector: ".vowel-cell",
+    clickableSelector: ".clickable",
     historyTableSelector: "#historyTable",
     storageKey: "vowels",
     messages: {
@@ -282,33 +286,53 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const data = await response.json();
-      const positionedItems = computeVowelLayout(data);
-      chart.querySelectorAll(".vowel-cell").forEach((cell) => cell.remove());
+      const cellsLayer =
+        chart.querySelector("#vowelCells") ||
+        chart.appendChild(Object.assign(document.createElement("div"), {
+          className: "vowel-chart__cells ipa-vowel-grid",
+          id: "vowelCells"
+        }));
+
+      const positionedCells = computeVowelLayout(data);
+      cellsLayer.innerHTML = "";
       vowelPool = [];
       Object.keys(soundMap).forEach((key) => delete soundMap[key]);
 
-      positionedItems.forEach((item) => {
-        if (!item || !item.soundId) return;
-        vowelPool.push(item.soundId);
-        soundMap[item.soundId] = item.ipa;
+      positionedCells.forEach((cell) => {
+        if (!cell || !cell.items || cell.items.length === 0) return;
 
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "vowel-cell clickable";
-        button.dataset.sound = item.soundId;
-        button.dataset.ipa = item.ipa;
-        button.dataset.name = item.name || "";
-        if (typeof item.rounded === "boolean") {
-          button.dataset.rounded = item.rounded ? "true" : "false";
+        const wrapper = document.createElement("div");
+        wrapper.className = "vowel-cell";
+        wrapper.style.setProperty("--left", `${cell.anchor.left}%`);
+        wrapper.style.setProperty("--top", `${cell.anchor.top}%`);
+        if (cell.items.length > 1) {
+          wrapper.dataset.hasPair = "true";
         }
-        const { left, top } = mapToChartCoordinates(item.x, item.y);
-        button.style.setProperty("--left", `${left}%`);
-        button.style.setProperty("--top", `${top}%`);
-        const labelDetail = item.name ? `（${item.name}）` : "";
-        button.setAttribute("aria-label", `${item.ipa}${labelDetail}`);
-        button.textContent = item.ipa;
 
-        chart.appendChild(button);
+        cell.items.forEach(({ data: itemData, offset }) => {
+          if (!itemData || !itemData.soundId) return;
+          vowelPool.push(itemData.soundId);
+          soundMap[itemData.soundId] = itemData.ipa;
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "vowel-button clickable";
+          button.dataset.sound = itemData.soundId;
+          button.dataset.ipa = itemData.ipa;
+          button.dataset.name = itemData.name || "";
+          if (typeof itemData.rounded === "boolean") {
+            button.dataset.rounded = itemData.rounded ? "true" : "false";
+          }
+          button.style.setProperty("--offset-x", `${offset.x}%`);
+          button.style.setProperty("--offset-y", `${offset.y}%`);
+          const labelDetail = itemData.name ? `（${itemData.name}）` : "";
+          button.setAttribute("aria-label", `${itemData.ipa}${labelDetail}`);
+          button.textContent = itemData.ipa;
+
+          wrapper.appendChild(button);
+        });
+
+        cellsLayer.appendChild(wrapper);
       });
     } catch (error) {
       console.error("母音データの読み込みに失敗しました", error);
