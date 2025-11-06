@@ -1,40 +1,24 @@
 const TUFS_AUDIO_BASE = "https://www.coelang.tufs.ac.jp/ipa/sounds/";
-const NONPULMONIC_FILES = [
-  // クリック音
-  "s176.mp3",
-  "s177.mp3",
-  "s178.mp3",
-  "s179.mp3",
-  "s180.mp3",
-  // 内破音
-  "s160.mp3",
-  "s162.mp3",
-  "s164.mp3",
-  "s166.mp3",
-  "s168.mp3",
-  // 放出音
-  "s101_401.mp3",
-  "s103_401.mp3",
-  "s109_401.mp3",
-  "s132_401.mp3",
-];
 
-const NONPULMONIC_JA = [
-  "両唇音",
-  "歯音",
-  "（後部）歯茎音",
-  "硬口蓋歯茎音",
-  "歯茎側面音",
-  "両唇音",
-  "歯音／歯茎音",
-  "硬口蓋音",
-  "軟口蓋音",
-  "口蓋垂音",
-  "両唇音",
-  "歯音／歯茎音",
-  "軟口蓋音",
-  "歯茎摩擦音",
-];
+const NONPULMONIC_DATA = {
+  // クリック音
+  "ʘ": { sound: "s176.mp3", name: "両唇音" },
+  "ǀ": { sound: "s177.mp3", name: "歯音" },
+  "ǃ": { sound: "s178.mp3", name: "（後部）歯茎音" },
+  "ǂ": { sound: "s179.mp3", name: "硬口蓋歯茎音" },
+  "ǁ": { sound: "s180.mp3", name: "歯茎側面音" },
+  // 内破音
+  "ɓ": { sound: "s160.mp3", name: "両唇音" },
+  "ɗ": { sound: "s162.mp3", name: "歯音／歯茎音" },
+  "ᶑ": { sound: "s164.mp3", name: "そり舌音" },
+  "ʄ": { sound: "s166.mp3", name: "硬口蓋音" },
+  "ɠ": { sound: "s168.mp3", name: "軟口蓋音" },
+  // 放出音
+  "tʼ": { sound: "s101_401.mp3", name: "歯茎音" },
+  "kʼ": { sound: "s103_401.mp3", name: "軟口蓋音" },
+  "qʼ": { sound: "s109_401.mp3", name: "口蓋垂音" },
+  "sʼ": { sound: "s132_401.mp3", name: "歯茎摩擦音" },
+};
 
 function buildAudioSrc(filename) {
   return new URL(filename, TUFS_AUDIO_BASE).href;
@@ -182,10 +166,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function attachJaLabelsToNonpulmonicCells(targetCells) {
-    targetCells.forEach((cell, index) => {
-      const ja = NONPULMONIC_JA[index] || "";
-      const button = cell.querySelector(".np-glyph-btn");
+    targetCells.forEach((cell) => {
       const glyph = getCellGlyph(cell);
+      const data = glyph ? NONPULMONIC_DATA[glyph] : undefined;
+      const ja = data?.name || "";
+      const button = cell.querySelector(".np-glyph-btn");
       const wrapper = ensureItemWrapper(cell);
 
       if (ja) {
@@ -238,8 +223,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  cells.forEach((cell, index) => {
-    const filename = NONPULMONIC_FILES[index];
+  cells.forEach((cell) => {
+    const glyph = getCellGlyph(cell);
+    const data = glyph ? NONPULMONIC_DATA[glyph] : undefined;
+    const filename = data?.sound;
+
     if (filename) {
       cell.dataset.sound = filename;
       const button = cell.querySelector(".np-glyph-btn");
