@@ -3,9 +3,9 @@ const NONPULMONIC_FILES = [
   // クリック音
   "s176.mp3",
   "s177.mp3",
-  "s178.mp3",
-  "s179.mp3",
   "s180.mp3",
+  "s179.mp3",
+  "s178.mp3",
   // 内破音
   "s160.mp3",
   "s162.mp3",
