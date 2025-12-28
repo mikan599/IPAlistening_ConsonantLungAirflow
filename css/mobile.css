@@ -140,16 +140,57 @@ h1 {
   font-size: 0.78rem;
 }
 
-.vowel-cell {
-  width: clamp(40px, 14vw, 52px);
-  height: clamp(40px, 14vw, 52px);
-}
-
-.vowel-cell[data-name]::after {
-  display: none;
-}
-
 @media (max-width: 640px) {
+  .ipa-vowel-grid {
+    position: static;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(44px, 1fr));
+    gap: 12px 14px;
+  }
+
+  .vowel-cell {
+    position: static;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 44px;
+    pointer-events: auto;
+  }
+
+  .vowel-cell[data-has-pair="true"] {
+    justify-content: space-between;
+  }
+
+  .vowel-button {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    flex: 0 1 auto;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: clamp(1.1rem, 5vw, 1.4rem);
+    padding: 8px 10px;
+  }
+
+  .vowel-cell[data-has-pair="true"] .vowel-button {
+    flex: 1 1 44px;
+  }
+
+  .vowel-button:hover,
+  .vowel-button:focus-visible,
+  .vowel-button.is-playing {
+    transform: none;
+    box-shadow: 0 8px 20px rgba(66, 165, 245, 0.24);
+  }
+
+  .vowel-button[data-name]::after {
+    display: none;
+  }
+
   .quiz-controls {
     display: flex;
     flex-direction: row;
