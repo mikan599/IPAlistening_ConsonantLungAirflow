@@ -307,6 +307,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let vowelPool = []; 
   const soundMap = {}; 
+  const soundIdToFileStem = {}; // v124 -> Close_front_unrounded_vowel など
 
   // --- チャート生成 ---
   async function populateChart() {
@@ -336,18 +337,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
         
-        // 【修正点】 IPA記号を ipachart.com の長いファイル名に変換してIDにする
-        // マップにない場合は、IPA記号そのもの（フォールバック）を使います
+        // いままで通り「履歴キー」は v124 などの soundId を使う（重要）
+        const soundId = item.soundId;
+
+        // 再生用に ipachart のファイル名へ変換して別マップに保存する
         const fileStem = VOWEL_FILE_MAP[item.ipa] || item.ipa;
-        const soundId = fileStem; 
+        soundIdToFileStem[soundId] = fileStem;
 
         vowelPool.push(soundId);
-        soundMap[soundId] = item.ipa; 
+        soundMap[soundId] = item.ipa;
 
         const button = document.createElement("button");
         button.type = "button";
         button.className = "vowel-cell clickable";
-        button.dataset.sound = soundId;
+        button.dataset.sound = soundId;     // ← ここが v124 に戻る
+        button.dataset.ipa = item.ipa;
+        button.dataset.name = item.name || "";
         button.dataset.ipa = item.ipa;
         button.dataset.name = item.name || "";
         if (typeof item.rounded === "boolean") {
@@ -384,7 +389,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 【URL生成】
     // Base URL + ファイル名(soundId) + .mp3
     // 例: https://www.ipachart.com/mp3/Close_front_unrounded_vowel.mp3
-    const fullUrl = `${IPACHART_AUDIO_BASE}${soundId}.mp3`;
+    const fileStem = soundIdToFileStem[soundId] || soundId;
+    const fullUrl = `${IPACHART_AUDIO_BASE}${fileStem}.mp3`;
     
     audioPlayer.src = fullUrl;
     audioPlayer.play().catch(e => console.warn("Play error:", e));
