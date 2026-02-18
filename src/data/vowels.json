@@ -6,9 +6,9 @@
   { "soundId": "v105", "ipa": "ɯ", "name": "後舌狭母音（非円唇）", "height": 0, "backness": "back", "rounded": false },
   { "soundId": "v106", "ipa": "u", "name": "後舌狭母音（円唇）", "height": 0, "backness": "back", "rounded": true },
 
-  { "soundId": "v107", "ipa": "ɪ", "name": "前舌狭母音寄り（非円唇）", "height": 0.5, "backness": "near-front", "rounded": false },
-  { "soundId": "v108", "ipa": "ʏ", "name": "前舌狭母音寄り（円唇）", "height": 0.5, "backness": "near-front", "rounded": true },
-  { "soundId": "v109", "ipa": "ʊ", "name": "後舌狭母音寄り（円唇）", "height": 0.5, "backness": "near-back", "rounded": true },
+  { "soundId": "v107", "ipa": "ɪ", "name": "前舌め広めの狭母音（非円唇）", "height": 0.5, "backness": "near-front", "rounded": false },
+  { "soundId": "v108", "ipa": "ʏ", "name": "前舌め広めの狭母音（円唇）", "height": 0.5, "backness": "near-front", "rounded": true },
+  { "soundId": "v109", "ipa": "ʊ", "name": "後舌め広めの狭母音（円唇）", "height": 0.5, "backness": "near-back", "rounded": true },
 
   { "soundId": "v110", "ipa": "e", "name": "前舌半狭母音（非円唇）", "height": 1, "backness": "front", "rounded": false },
   { "soundId": "v111", "ipa": "ø", "name": "前舌半狭母音（円唇）", "height": 1, "backness": "front", "rounded": true },
@@ -17,7 +17,7 @@
   { "soundId": "v114", "ipa": "ɤ", "name": "後舌半狭母音（非円唇）", "height": 1, "backness": "back", "rounded": false },
   { "soundId": "v115", "ipa": "o", "name": "後舌半狭母音（円唇）", "height": 1, "backness": "back", "rounded": true },
 
-  { "soundId": "v116", "ipa": "e̞", "name": "前舌半狭-半広母音（非円唇）", "height": 1.5, "backness": "front", "rounded": false },
+  { "soundId": "v116", "ipa": "ə", "name": "中舌中央母音（シュワ）", "height": 1.5, "backness": "central", "rounded": false },
   { "soundId": "v117", "ipa": "ø̞", "name": "前舌半狭-半広母音（円唇）", "height": 1.5, "backness": "front", "rounded": true },
 
   { "soundId": "v118", "ipa": "ɛ", "name": "前舌半広母音（非円唇）", "height": 2, "backness": "front", "rounded": false },
@@ -28,7 +28,7 @@
   { "soundId": "v123", "ipa": "ɔ", "name": "後舌半広母音（円唇）", "height": 2, "backness": "back", "rounded": true },
 
   { "soundId": "v124", "ipa": "æ", "name": "前舌半広-広母音（非円唇）", "height": 2.5, "backness": "front", "rounded": false },
-  { "soundId": "v125", "ipa": "ɐ", "name": "中舌広母音寄り（非円唇）", "height": 2.5, "backness": "central", "rounded": false },
+  { "soundId": "v125", "ipa": "ɐ", "name": "中舌狭めの広母音", "height": 2.5, "backness": "central", "rounded": false },
 
   { "soundId": "v126", "ipa": "a", "name": "前舌広母音（非円唇）", "height": 3, "backness": "front", "rounded": false },
   { "soundId": "v127", "ipa": "ɶ", "name": "前舌広母音（円唇）", "height": 3, "backness": "front", "rounded": true },

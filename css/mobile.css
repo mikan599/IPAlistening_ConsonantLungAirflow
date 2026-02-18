@@ -127,16 +127,7 @@ h1 {
 
 .vowel-chart__legend {
   top: 8px;
-<<<<<<< HEAD
   gap: 16px;
-=======
-  left: 16px;
-  right: 16px;
-  height: 18px;
-}
-
-.vowel-legend__item {
->>>>>>> aaae45b (Adjust vowel chart cell positions)
   font-size: 0.78rem;
 }
 

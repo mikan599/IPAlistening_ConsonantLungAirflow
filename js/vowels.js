@@ -46,7 +46,7 @@ const VOWEL_FILE_MAP = {
 
   // --- 狭めの広母音 (Near-open) ---
   "æ": "Near-open_front_unrounded_vowel",
-  "ɐ": "Near-open_central_vowel", 
+  "ɐ": "Near-open_central_unrounded_vowel", 
 
   // --- 広母音 (Open) ---
   "a": "Open_front_unrounded_vowel",
@@ -323,9 +323,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       vowelPool = [];
       Object.keys(soundMap).forEach((key) => delete soundMap[key]);
 
+      // ▼▼▼ ★追加：除外したい記号のリスト ▼▼▼
+      const ignoreSymbols = ["e̞", "ø̞", "ä"]; 
+      // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
       positionedItems.forEach((item) => {
         if (!item || !item.ipa) return;
 
+        // ▼▼▼ ★追加：除外リストに含まれていたらスキップする処理 ▼▼▼
+        if (ignoreSymbols.includes(item.ipa)) {
+            return;
+        }
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        
         // 【修正点】 IPA記号を ipachart.com の長いファイル名に変換してIDにする
         // マップにない場合は、IPA記号そのもの（フォールバック）を使います
         const fileStem = VOWEL_FILE_MAP[item.ipa] || item.ipa;
